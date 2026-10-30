@@ -16,6 +16,8 @@
  */
 const API_PREFIX = "/api/v1";
 const API_BASE = "https://api.cloudflare.com/client/v4/accounts/";
+// Account ID is an identifier, not a secret. Override with CF_ACCOUNT_ID if needed.
+const DEFAULT_ACCOUNT_ID = "5d04576517bb25ffcf314059bf17a239";
 const MAX_BODY_BYTES = 16 * 1024 * 1024;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_MESSAGES = 80;
@@ -330,8 +332,9 @@ async function chatCompletion(request, env) {
     try { return await imageCompletion(body, env); }
     catch (error) { return fail(error.message || "Image generation failed.", 502); }
   }
-  if (!env.CF_ACCOUNT_ID || !env.CF_API_TOKEN) {
-    return fail("Cloudflare chat is not configured. Set CF_ACCOUNT_ID and the CF_API_TOKEN secret on the Worker.", 503);
+  const accountId = env.CF_ACCOUNT_ID || DEFAULT_ACCOUNT_ID;
+  if (!accountId || !env.CF_API_TOKEN) {
+    return fail("Cloudflare chat is not configured. Add the CF_API_TOKEN secret to this Worker.", 503);
   }
 
   let messages;
@@ -361,7 +364,7 @@ async function chatCompletion(request, env) {
     payload.chat_template_kwargs = { enable_thinking: true };
   }
 
-  const endpoint = API_BASE + encodeURIComponent(env.CF_ACCOUNT_ID) + "/ai/v1/chat/completions";
+  const endpoint = API_BASE + encodeURIComponent(accountId) + "/ai/v1/chat/completions";
   let upstream;
   try {
     upstream = await fetch(endpoint, {
@@ -401,7 +404,7 @@ export default {
       return withCors(json({
         ok: true,
         service: "zeplex-cloudflare-ai",
-        chatConfigured: Boolean(env.CF_ACCOUNT_ID && env.CF_API_TOKEN),
+        chatConfigured: Boolean((env.CF_ACCOUNT_ID || DEFAULT_ACCOUNT_ID) && env.CF_API_TOKEN),
         imageBindingConfigured: typeof env.AI?.run === "function",
         documentBindingConfigured: typeof env.AI?.toMarkdown === "function"
       }), request, env);
