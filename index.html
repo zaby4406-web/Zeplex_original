@@ -217,7 +217,8 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 <section><h3>Assistant style</h3><select id="per" class="ed" style="width:100%;min-height:0" aria-label="Assistant style"><option value="">Balanced (default)</option><option value="concise">Concise: shortest useful answers</option><option value="teacher">Teacher: step by step with examples</option><option value="coder">Senior engineer: code first, rigorous</option><option value="writer">Writer: polished, vivid prose</option></select><label class="note"><input type="checkbox" id="shm"> Developer: show engine id under replies</label><label class="note"><input type="checkbox" id="lnk"> Read links I paste (uses the free r.jina.ai reader)</label></section>
 <section><h3>Memory</h3><p class="note">Say &ldquo;remember that &hellip;&rdquo; in a chat to save a fact. Stored only in this browser.</p><label class="note"><input type="checkbox" id="memon"> Use memory</label><div id="mem" style="width:100%;display:flex;flex-direction:column;gap:4px"></div></section>
 <section><h3>Custom instructions</h3><textarea id="ci" class="ed" rows="3" maxlength="1500" style="width:100%" placeholder="How should Zeplex respond? e.g. Be terse. Prefer TypeScript." aria-label="Custom instructions"></textarea></section>
-<section><h3>Models</h3><p class="note">Zeplex only uses AI engines that are free to use, picks one automatically for each request, and never switches to a paid one.</p><p class="note" id="cinfo"></p><button class="nb" id="rf">Refresh AI engines</button></section>
+<section><h3>AI backend</h3><p class="note">Paste your deployed Cloudflare Worker URL. It should look like https://your-worker.your-subdomain.workers.dev. Your Cloudflare token is never entered here.</p><input id="workerurl" class="ed" style="width:100%;min-height:0" type="url" inputmode="url" placeholder="https://your-worker.your-subdomain.workers.dev" aria-label="Cloudflare Worker URL"><button class="nb" id="saveworker">Save backend URL</button></section>
+<section><h3>Models</h3><p class="note">Zeplex automatically selects an available engine. Eligible models use Cloudflare's shared 10,000-Neuron daily free allocation; on the Free plan, requests stop when that allocation is exhausted.</p><p class="note" id="cinfo"></p><button class="nb" id="rf">Refresh AI engines</button></section>
 <section><h3>Conversations</h3><p class="note">Stored only in this browser (IndexedDB). Nothing syncs to other devices.</p><button class="nb" id="ex">Export current chat</button><button class="nb" id="xh">Export as HTML</button><button class="nb" id="pr">Print / save as PDF</button><button class="nb" id="bk">Back up all chats (JSON)</button><button class="nb" id="rs">Restore from backup</button><input type="file" id="rsf" accept="application/json,.json" hidden>
 <button class="nb" id="cl">Clear all local history</button></section>
 <section><h3>Keyboard</h3><p class="note">Enter sends on desktop. Shift+Enter adds a line. Esc closes dialogs. Ctrl/Cmd+K opens the command palette.</p></section>
@@ -235,14 +236,17 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 <div id="toasts" aria-live="polite"></div>
 <script>
 "use strict";
-// SECURITY: the file holding your real key must stay private. Anyone who can read this file can read the key.
-const OPENROUTER_API_KEY = "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";
-const API = "https://openrouter.ai/api/v1";
+// The browser only knows the Worker URL. Cloudflare credentials stay in Worker secrets.
+const WORKER_BASE = (() => {
+ try { return (localStorage.getItem('zx-worker-url') || 'https://zeplex-ai.zaby4406.workers.dev').trim().replace(/\/+$/, ''); }
+ catch { return ''; }
+})();
+const API = WORKER_BASE ? WORKER_BASE + '/api/v1' : '';
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid = () => crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
 const icon = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
-const KEY_OK = () => !!OPENROUTER_API_KEY && !OPENROUTER_API_KEY.startsWith("PASTE_YOUR");
+const KEY_OK = () => !!API;
 const S = {wm:'auto',chats:[], cur:null, mode:'chat', atts:[], busy:false, ac:null, limit:60};
 const E = (m, fatal) => Object.assign(new Error(m), {userMsg:true, fatal});
 function toast(m){const t=document.createElement('div');t.className='t';t.textContent=m;$('#toasts').append(t);setTimeout(()=>{t.style.transition='opacity .3s,transform .3s';t.style.opacity=0;t.style.transform='translateY(6px)';setTimeout(()=>t.remove(),320)},2600)}
@@ -270,19 +274,31 @@ function setTheme(t,el){
 
 /* ---------- Model catalogue (live, cached, free-only) ---------- */
 function norm(m){
- const p=m.pricing;if(!m.id||!p)return null;const n=v=>v==null||v===''?NaN:Number(v);
- // free = prompt AND completion explicitly 0, and every other present price field is 0. Missing price is NOT free.
- const free=n(p.prompt)===0&&n(p.completion)===0&&Object.entries(p).every(([k,v])=>k==='discount'||v==null||v===''||n(v)===0);
+ if(!m||!m.id)return null;
  const a=m.architecture||{},mo=(a.modality||'').split('->');
- return{id:m.id,name:m.name,free,ctx:m.context_length||0,inp:a.input_modalities||(mo[0]?mo[0].split('+'):[]),out:a.output_modalities||(mo[1]?mo[1].split('+'):[]),sp:m.supported_parameters||[],mc:(m.top_provider&&m.top_provider.max_completion_tokens)||0};
+ const free=m.eligible_for_daily_free_allocation===true;
+ return {
+  id:m.id,name:m.name||m.id,free,ctx:Number(m.context_length)||0,
+  inp:a.input_modalities||(mo[0]?mo[0].split('+'):[]),
+  out:a.output_modalities||(mo[1]?mo[1].split('+'):[]),
+  sp:Array.isArray(m.supported_parameters)?m.supported_parameters:[],
+  mc:Number(m.top_provider&&m.top_provider.max_completion_tokens)||0
+ };
 }
 const Cat={models:[],t:0,fresh:false,ready:null,async load(force){
+ if(!API){this.models=[];return}
  let c=null;try{c=JSON.parse(localStorage.getItem('zx-cat'))}catch{}
  if(c&&c.m&&c.m.length){this.models=c.m;this.t=c.t}
  if(!force&&c&&c.m&&c.m.length&&c.m[0].mc!==undefined&&Date.now()-c.t<6*36e5)return;
- try{const r=await fetch(API+'/models');if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json(),m=(j.data||[]).map(norm).filter(x=>x&&x.free);
-  if(!m.length)throw new Error('empty catalogue');this.models=m;this.t=Date.now();this.fresh=true;try{localStorage.setItem('zx-cat',JSON.stringify({t:this.t,m}))}catch{}}
- catch(e){if(force)throw e}}};
+ try{
+  const r=await fetch(API+'/models',{headers:{'Accept':'application/json'},cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const j=await r.json(),m=(j.data||[]).map(norm).filter(x=>x&&x.free);
+  if(!m.length)throw new Error('No models are eligible for the daily free allocation.');
+  this.models=m;this.t=Date.now();this.fresh=true;
+  try{localStorage.setItem('zx-cat',JSON.stringify({t:this.t,m}))}catch{}
+ }catch(e){if(force)throw e}
+}};
 
 /* ---------- Task classifier + router ---------- */
 function classify(text,atts){
@@ -293,23 +309,28 @@ function classify(text,atts){
 }
 const Health=(()=>{try{return JSON.parse(localStorage.getItem('zx-h'))||{}}catch{return{}}})(),LAST={};
 function score(m,req){
- let s=Math.min(m.ctx,262144)/262144*15;const b=(m.id.match(/(\d+(?:\.\d+)?)b\b/i)||[])[1];if(b)s+=Math.min(+b,120)/120*20;
- if(req.kind==='code'&&/cod|devstral|qwen3|deepseek|gpt-oss/i.test(m.id))s+=25;
- if(req.kind==='code'&&m.sp.includes('reasoning'))s+=6;
- if(req.deep&&(m.sp.includes('reasoning')||/r1|think|reason|gpt-oss|qwen3|deepseek/i.test(m.id)))s+=30;
- if(req.kind==='reason')s+=(/r1|think|reason|gpt-oss|qwen3|deepseek/i.test(m.id)?20:0)+(m.sp.includes('reasoning')?8:0);
- if(req.img&&/vl|vision|gemma|llama-4|mistral-small|gemini/i.test(m.id))s+=10;
- if(req.kind==='code'){if(/qwen3-coder|devstral|deepseek-(?:v3|r1|chat)|gpt-oss-120b|glm-4|kimi-k2|qwen3-235b|llama-3\.3-70b|llama-4|minimax|mistral-large/i.test(m.id))s+=20;if(b&&+b<14)s-=25;if(m.ctx<32000)s-=15}
- const h=Health[m.id];if(h){s-=h.fail*15;if(h.lat)s-=Math.min(h.lat/1000,10)}
- return s+Math.random()*.01; // epsilon only breaks exact ties
+ const id=m.id.toLowerCase();
+ const fast=/glm-4\.7-flash/.test(id);
+ const strong=/nemotron-3-120b/.test(id);
+ const vision=m.inp.includes('image');
+ let s=0;
+ // Keep fast chat on the low-latency model; route harder work to the larger model.
+ if(req.img)s+=vision?120:-1000;
+ else if(req.kind==='code'||req.kind==='reason'||req.deep)s+=strong?95:fast?48:0;
+ else s+=fast?70:strong?-12:0;
+ if(req.deep&&m.sp.includes('reasoning'))s+=16;
+ if(req.kind==='reason'&&m.sp.includes('reasoning'))s+=12;
+ if(m.ctx>=req.tok*1.25)s+=8;else s-=40;
+ const h=Health[m.id];if(h){s-=h.fail*18;if(h.lat)s-=Math.min(h.lat/1200,12)}
+ return s;
 }
 function candidates(req,ex){const now=Date.now();
  return Cat.models.filter(m=>m.free&&!ex.includes(m.id)&&!((Health[m.id]||{}).until>now)&&m.inp.includes('text')&&m.out.includes('text')&&(!req.img||m.inp.includes('image'))&&m.ctx>=req.tok*1.25)
   .map(m=>[m,score(m,req)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);}
 
-/* ---------- OpenRouter streaming ---------- */
+/* ---------- Cloudflare Worker streaming ---------- */
 async function stream(model,messages,signal,onTok,extra){
- const r=await fetch(API+'/chat/completions',{method:'POST',signal,headers:{'Authorization':'Bearer '+OPENROUTER_API_KEY,'Content-Type':'application/json','X-Title':'Zeplex'},body:JSON.stringify({model,messages,stream:true,...extra})});
+ const r=await fetch(API+'/chat/completions',{method:'POST',signal,headers:{'Content-Type':'application/json','Accept':'text/event-stream'},body:JSON.stringify({model,messages,stream:true,...extra})});
  if(!r.ok){const e=await r.json().catch(()=>({}));throw Object.assign(new Error((e.error&&e.error.message)||'HTTP '+r.status),{status:r.status})}
  const rd=r.body.getReader(),dec=new TextDecoder();let buf='';
  for(;;){const {done,value}=await rd.read();if(done)return;buf+=dec.decode(value,{stream:true});let i;
@@ -366,9 +387,10 @@ const est=ms=>Math.ceil(ms.reduce((n,m)=>n+(typeof m.content==='string'?m.conten
 function friendly(e){const s=e.status;
  if(e.userMsg)return e.message;
  if(/data policy|privacy/i.test(e.message||''))return 'Your account data-sharing settings are blocking the available AI engines. Update them in your provider privacy settings, then retry.';
- if(s===401)return 'The AI service rejected the access key. Check the key configured in index.html.';
- if(s===402)return 'The AI service reported a usage limit. Please try again later.';
- if(s===429)return 'Zeplex is busy right now. Wait a moment and retry.';
+ if(s===401)return 'The Worker could not authenticate with Cloudflare. Check its CF_API_TOKEN secret.';
+ if(s===402)return 'The AI service reported a usage limit. Check your Cloudflare usage.';
+ if(s===429)return 'The model is busy or the daily free Neuron allocation has been exhausted. Please retry later or check Cloudflare usage.';
+ if(s===503)return 'The AI backend is not configured. Check CF_ACCOUNT_ID, CF_API_TOKEN and the Workers AI binding in your Worker settings.';
  if(e instanceof TypeError)return 'Network error — check your connection and retry.';
  return clean2(e.message)||'Something went wrong.';}
 const nearBottom=()=>{const f=$('#feed');return f.scrollHeight-f.scrollTop-f.clientHeight<160};
@@ -381,14 +403,14 @@ async function run(c,o){const rf=S.refine;S.refine=null;
  const am=cont||{id:uid(),role:'assistant',content:'',t:Date.now()};if(!cont&&req.imgReq){am.loadImg=true;am.stage='Looking for your image…'}if(cont){am.base=am.content;am.cn='';am.trunc=false;am.err='';am.stopped=false;renderMsgs(false)}else{if(S.keep){am.alts=S.keep;am.vi=S.keep.length;S.keep=null}c.messages.push(am);renderMsgs(true)}
  const el=$('#msgs').lastElementChild.querySelector('.mb');
  try{
-  if(!KEY_OK())throw E('No access key is configured yet. Add it to the constant near the top of index.html, then reload.',true);
+  if(!KEY_OK())throw E('Connect your Cloudflare Worker first. Open Settings → AI backend, paste its https:// Worker URL and save.',true);
   {await Cat.ready;if(!Cat.models.length){try{await Cat.load(true)}catch{}}const gm=req.genImg&&Cat.models.find(m=>m.free&&m.out.includes('image'));
-  if(gm){am.stage='Creating your image…';paint(el,am);const g=await genImage(gm.id,apiMsgs(c,c.messages.length-1),S.ac.signal);if(!g.imgs.length)throw E('Image creation did not return a result. Try rephrasing.',true);am.content=g.text||'Here is your image.';am.imgs=g.imgs;LAST.m=gm.id}
+  if(gm){am.stage='Creating your image…';paint(el,am);const g=await genImage(gm.id,apiMsgs(c,c.messages.length),S.ac.signal);if(!g.imgs.length)throw E('Image creation did not return a result. Try rephrasing.',true);am.content=g.text||'Here is your image.';am.imgs=g.imgs;LAST.m=gm.id}
   else if(req.imgReq){await findImage(lu.content,am,el)}
   else{if(!Cat.models.length)throw E('Zeplex could not start its AI engines. Check your connection and retry.',true);
    let ctx='';if(S.dr&&!cont){ctx=await research(lu,am,el);req.deep=true}else if(S.wm!=='off'&&!cont&&(S.wm==='on'||needsSearch(lu.content,req))){try{const rs=await Promise.allSettled([wiki(lu.content,S.ac.signal),hn(lu.content,S.ac.signal)]);if(S.ac.signal.aborted)throw new DOMException('Aborted','AbortError');const src=rs.flatMap(r=>r.status==='fulfilled'?r.value:[]);if(!src.length&&rs.every(r=>r.status==='rejected'))throw rs[0].reason;if(src.length){am.src=src.map(({t,u,d})=>({t,u,d}));ctx='\n\nWeb results from Wikipedia and Hacker News (fetched just now). Ground your answer in them and cite as [1], [2]; if they do not answer the question, say so plainly.\n'+src.map((x,i)=>`[${i+1}] ${x.t} (${x.u}): ${x.x}`).join('\n')}else am.note='Wikipedia search found nothing relevant, so this answer comes from training data.'}catch(e){if(S.ac.signal.aborted)throw e;am.note='Web search failed ('+e.message+'), so this answer comes from training data.'}}
    if(!cont){ctx+=await linkCtx(lu,am);ctx+=calcCtx(lu.content)}
-   const ms2=cont?contMs(c,am,req):apiMsgs(c,c.messages.length-1);if(rf)ms2.push({role:'assistant',content:rf.prev},{role:'user',content:'Revise your previous answer: '+rf.instr+'. Reply with the full revised answer only, with no preamble about the change.'});if(ctx){ms2[0].content+=ctx;req.tok+=Math.ceil(ctx.length/3.5)}if(req.kind==='code'){ms2[0].content+=CODE;req.tok+=Math.ceil(CODE.length/3.5)}
+   const ms2=cont?contMs(c,am,req):apiMsgs(c,c.messages.length);if(rf)ms2.push({role:'assistant',content:rf.prev},{role:'user',content:'Revise your previous answer: '+rf.instr+'. Reply with the full revised answer only, with no preamble about the change.'});if(ctx){ms2[0].content+=ctx;req.tok+=Math.ceil(ctx.length/3.5)}if(req.kind==='code'){ms2[0].content+=CODE;req.tok+=Math.ceil(CODE.length/3.5)}
    const cap=Math.max(0,...Cat.models.filter(m=>m.free&&m.inp.includes('text')&&m.out.includes('text')&&(!req.img||m.inp.includes('image'))).map(m=>m.ctx));let cut=0;
    while(cap&&est(ms2)*1.25>cap&&ms2.length>2){ms2.splice(1,1);cut++}
    if(cut){req.tok=est(ms2);am.note='Older messages were left out to fit the context window.'}
@@ -619,7 +641,7 @@ const HOOK="<script>(()=>{try{localStorage.getItem('x')}catch(e){const mem=()=>{
 const inject=h=>/<head[^>]*>/i.test(h)?h.replace(/<head[^>]*>/i,m=>m+HOOK):/<html[^>]*>/i.test(h)?h.replace(/<html[^>]*>/i,m=>m+HOOK):HOOK+h;
 const openSB=()=>{if(matchMedia('(max-width:1024px)').matches)document.body.classList.add('sbo');else document.body.classList.remove('sbc');if(matchMedia('(pointer:fine)').matches)setTimeout(()=>$('#q').focus(),400)};
 async function genImage(model,ms,signal){
- const r=await fetch(API+'/chat/completions',{method:'POST',signal,headers:{'Authorization':'Bearer '+OPENROUTER_API_KEY,'Content-Type':'application/json','X-Title':'Zeplex'},body:JSON.stringify({model,messages:ms.slice(1),modalities:['image','text']})});
+ const r=await fetch(API+'/chat/completions',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:ms,modalities:['image','text']})});
  const j=await r.json().catch(()=>({}));if(!r.ok||j.error)throw Object.assign(new Error((j.error&&j.error.message)||'HTTP '+r.status),{status:r.status});
  const m=(j.choices&&j.choices[0]&&j.choices[0].message)||{};return{text:m.content||'',imgs:(m.images||[]).map(x=>x.image_url&&x.image_url.url).filter(u=>/^data:image\/(png|jpeg|webp);base64,/.test(u||''))}}
 function md(src){
@@ -746,6 +768,19 @@ $('#obac').onclick=e=>{const b=e.target.closest('[data-c]');if(b){try{localStora
 $('#obper').onchange=e=>{try{localStorage.setItem('zx-per',e.target.value)}catch{}$('#per').value=e.target.value};
 $('#ob').addEventListener('close',()=>{try{localStorage.setItem('zx-ob','1')}catch{}$('#per').value=LS('zx-per');focusTa()});
 $('#dn').value=NAME();$('#dn').oninput=e=>setName(e.target.value);renderUser();
+$('#workerurl').value=WORKER_BASE;
+$('#saveworker').onclick=()=>{
+ const raw=$('#workerurl').value.trim();
+ if(!raw){try{localStorage.removeItem('zx-worker-url')}catch{}toast('Worker URL cleared. AI requests will stay disabled until one is set.');setTimeout(()=>location.reload(),500);return}
+ try{
+  const u=new URL(raw.replace(/\/api\/v1\/?$/,''));
+  if(u.protocol!=='https:'&&u.hostname!=='localhost'&&u.hostname!=='127.0.0.1')throw new Error('Use an HTTPS Worker URL.');
+  if(u.username||u.password||u.search||u.hash|| (u.pathname!=='/'&&u.pathname!==''))throw new Error('Enter the Worker base URL only, without a path.');
+  localStorage.setItem('zx-worker-url',u.origin);
+  toast('Backend URL saved. Reloading…');
+  setTimeout(()=>location.reload(),450);
+ }catch(e){toast(e.message||'That Worker URL is not valid.')}
+};
 addEventListener('message',e=>{if(!e.data||!e.data.zx||e.source!==$('#pvf').contentWindow)return;if(PVERR.length<20)PVERR.push(e.data.m);$('#pvet').textContent=PVERR.length+' error'+(PVERR.length>1?'s':'')+' in preview: '+PVERR[0];$('#pve').hidden=false});
 $('#pvfix').onclick=()=>{if(S.busy)return toast('Wait for the current reply, or stop it first');const m='The preview of '+PVN+' shows these errors:\n```\n'+PVERR.slice(0,5).join('\n')+'\n```\nFix them and give me the complete corrected file.';$('#pv').close();$('#ta').value=m;send()};
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();$('#ta').focus()}});
