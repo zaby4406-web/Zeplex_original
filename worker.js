@@ -101,7 +101,13 @@ function allowedOrigins(env) {
 
 function originAllowed(request, env) {
   const origin = request.headers.get("Origin");
-  if (!origin) return new URL(request.url).pathname === "/api/health";
+  if (!origin) {
+    const url = new URL(request.url);
+    // Allow direct browser checks for the read-only health and model catalogue
+    // endpoints. Chat completions still require a browser Origin on POST.
+    return request.method === "GET" &&
+      (url.pathname === "/api/health" || url.pathname === API_PREFIX + "/models");
+  }
   return allowedOrigins(env).includes(origin.replace(/\/+$/, ""));
 }
 
