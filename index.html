@@ -238,7 +238,7 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 "use strict";
 // The browser only knows the Worker URL. Cloudflare credentials stay in Worker secrets.
 const WORKER_BASE = (() => {
- try { return (localStorage.getItem('zx-worker-url') || '').trim().replace(/\/+$/, ''); }
+ try { return (localStorage.getItem('zx-worker-url') || 'https://zeplex-ai.zaby4406.workers.dev').trim().replace(/\/+$/, ''); }
  catch { return ''; }
 })();
 const API = WORKER_BASE ? WORKER_BASE + '/api/v1' : '';
