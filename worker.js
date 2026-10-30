@@ -7,17 +7,13 @@
  *   POST /api/v1/chat/completions
  *
  * Cloudflare Worker bindings/settings:
- *   AI                 Workers AI binding (image generation + PDF conversion)
- *   CF_ACCOUNT_ID      Text variable
- *   CF_API_TOKEN       Secret with Account > Workers AI > Read permission
+ *   AI                 Workers AI binding (chat, image generation + PDF conversion)
  *   ALLOWED_ORIGINS    Comma-separated exact website origins
  *
- * Do not put CF_API_TOKEN in index.html.
+ * Inference uses the native Workers AI binding. No API key or Account ID is
+ * needed in this source file.
  */
 const API_PREFIX = "/api/v1";
-const API_BASE = "https://api.cloudflare.com/client/v4/accounts/";
-// Account ID is an identifier, not a secret. Override with CF_ACCOUNT_ID if needed.
-const DEFAULT_ACCOUNT_ID = "5d04576517bb25ffcf314059bf17a239";
 const MAX_BODY_BYTES = 16 * 1024 * 1024;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_MESSAGES = 80;
@@ -275,23 +271,6 @@ function bytesToBase64(value) {
   return btoa(binary);
 }
 
-function upstreamError(text, status) {
-  let message = "The AI request failed.";
-  try {
-    const data = JSON.parse(text);
-    message = data.error?.message || data.errors?.[0]?.message || data.message || message;
-  } catch { if (text) message = text.slice(0, 400); }
-  if (/neuron|daily limit|quota|usage limit/i.test(message)) {
-    return "The shared 10,000-Neuron daily allocation may have been exhausted. It resets at 00:00 UTC. Check Cloudflare usage.";
-  }
-  if (status === 401) return "Cloudflare rejected CF_API_TOKEN. Check the token and its Workers AI permissions.";
-  if (status === 403) return "Cloudflare denied this model or account. Check model availability and billing settings.";
-  if (status === 429 || /capacity|overloaded|temporarily exceeded/i.test(message)) {
-    return "The model is busy or rate-limited. Retry in a moment.";
-  }
-  return message;
-}
-
 async function imageCompletion(body, env) {
   if (typeof env.AI?.run !== "function") return fail("Image generation is unavailable. Enable the Workers AI binding named AI.", 503);
   const messages = validateMessages(body.messages);
@@ -323,6 +302,89 @@ async function imageCompletion(body, env) {
   });
 }
 
+function openAIStream(source, model) {
+  const reader = source.getReader();
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  const id = "chatcmpl-" + crypto.randomUUID();
+  const created = Math.floor(Date.now() / 1000);
+  let buffer = "";
+  let finished = false;
+
+  const frame = (delta, finishReason = null) => ({
+    id, object: "chat.completion.chunk", created, model,
+    choices: [{ index: 0, delta, finish_reason: finishReason }]
+  });
+
+  const enqueueEvent = (controller, payload) => {
+    if (!payload || payload === "[DONE]") return;
+    let event;
+    try { event = JSON.parse(payload); } catch { return; }
+    const reasoning = event.reasoning || event.reasoning_content;
+    const response = typeof event.response === "string"
+      ? event.response
+      : (event.choices?.[0]?.delta?.content || "");
+    if (reasoning) {
+      controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({ reasoning })) + "\n\n"));
+    }
+    if (response) {
+      controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({ content: response })) + "\n\n"));
+    }
+  };
+
+  return new ReadableStream({
+    async pull(controller) {
+      if (finished) return;
+      try {
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) {
+            buffer += decoder.decode();
+            for (const line of buffer.split("\n")) {
+              const item = line.trim();
+              if (item.startsWith("data:")) enqueueEvent(controller, item.slice(5).trim());
+            }
+            controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({}, "stop")) + "\n\n"));
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            finished = true;
+            controller.close();
+            return;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          let split;
+          while ((split = buffer.indexOf("\n")) >= 0) {
+            const line = buffer.slice(0, split).trim();
+            buffer = buffer.slice(split + 1);
+            if (line.startsWith("data:")) enqueueEvent(controller, line.slice(5).trim());
+          }
+          return;
+        }
+      } catch (error) {
+        const message = String(error?.message || "Workers AI stream failed.").slice(0, 400);
+        controller.enqueue(encoder.encode("data: " + JSON.stringify({ error: { message } }) + "\n\n"));
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        finished = true;
+        controller.close();
+      }
+    },
+    async cancel(reason) {
+      finished = true;
+      try { await reader.cancel(reason); } catch {}
+    }
+  });
+}
+
+function assistantText(result) {
+  if (typeof result === "string") return result;
+  const reasoning = result?.reasoning || result?.reasoning_content || "";
+  const content = result?.response ||
+    result?.choices?.[0]?.message?.content ||
+    result?.output_text ||
+    "";
+  return (reasoning ? "<think>" + reasoning + "</think>\n\n" : "") + content;
+}
+
 async function chatCompletion(request, env) {
   let body;
   try { body = await readJson(request); }
@@ -332,9 +394,9 @@ async function chatCompletion(request, env) {
     try { return await imageCompletion(body, env); }
     catch (error) { return fail(error.message || "Image generation failed.", 502); }
   }
-  const accountId = env.CF_ACCOUNT_ID || DEFAULT_ACCOUNT_ID;
-  if (!accountId || !env.CF_API_TOKEN) {
-    return fail("Cloudflare chat is not configured. Add the CF_API_TOKEN secret to this Worker.", 503);
+
+  if (typeof env.AI?.run !== "function") {
+    return fail("Workers AI is not configured. Add a Workers AI binding named AI to this Worker.", 503);
   }
 
   let messages;
@@ -347,13 +409,13 @@ async function chatCompletion(request, env) {
   const requested = typeof body.model === "string" ? body.model : "";
   const selected = MODEL_BY_ID.has(requested) ? requested : (imageInput ? VISION_MODEL : TEXT_MODEL);
   const metadata = MODEL_BY_ID.get(selected);
+
   if (selected === IMAGE_MODEL) return fail("Use modalities:['image','text'] for image generation.", 400);
   if (imageInput && !metadata.architecture.input_modalities.includes("image")) {
     return fail("The selected model cannot analyse image attachments. Refresh the model catalogue and retry.", 400);
   }
 
-  const payload = {
-    model: selected,
+  const input = {
     messages,
     stream: body.stream === true,
     max_tokens: Math.round(clamp(body.max_tokens ?? body.max_completion_tokens, 256, MAX_OUTPUT_TOKENS, 4096)),
@@ -361,33 +423,45 @@ async function chatCompletion(request, env) {
   };
   const wantsThinking = Boolean(body.include_reasoning || body.reasoning?.effort === "high" || body.reasoning_effort === "high");
   if (wantsThinking && [VISION_MODEL, REASONING_MODEL].includes(selected)) {
-    payload.chat_template_kwargs = { enable_thinking: true };
+    input.chat_template_kwargs = { enable_thinking: true };
   }
 
-  const endpoint = API_BASE + encodeURIComponent(accountId) + "/ai/v1/chat/completions";
-  let upstream;
   try {
-    upstream = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        authorization: "Bearer " + env.CF_API_TOKEN,
-        "content-type": "application/json",
-        accept: payload.stream ? "text/event-stream" : "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-  } catch {
-    return fail("Could not reach Cloudflare Workers AI. Check the Worker network and account configuration.", 502);
-  }
+    const result = await env.AI.run(selected, input);
+    if (input.stream) {
+      return new Response(openAIStream(result, selected), {
+        status: 200,
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache, no-transform",
+          "x-accel-buffering": "no"
+        }
+      });
+    }
 
-  if (!upstream.ok) return fail(upstreamError(await upstream.text(), upstream.status), upstream.status);
-  const headers = new Headers({
-    "cache-control": "no-cache, no-transform",
-    "x-accel-buffering": "no"
-  });
-  const contentType = upstream.headers.get("content-type");
-  if (contentType) headers.set("content-type", contentType);
-  return new Response(upstream.body, { status: upstream.status, headers });
+    const content = assistantText(result);
+    if (!content.trim()) return fail("Workers AI returned an empty response.", 502);
+    return json({
+      id: "chatcmpl-" + crypto.randomUUID(),
+      object: "chat.completion",
+      created: Math.floor(Date.now() / 1000),
+      model: selected,
+      choices: [{ index: 0, message: { role: "assistant", content }, finish_reason: "stop" }],
+      usage: result?.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
+    });
+  } catch (error) {
+    const message = String(error?.message || "Workers AI inference failed.");
+    if (/daily free allocation|neuron|quota|usage limit|account limited/i.test(message)) {
+      return fail("The daily Workers AI allocation may have been exhausted. Check your Cloudflare usage or plan.", 429);
+    }
+    if (/capacity|overloaded|temporarily exceeded/i.test(message)) {
+      return fail("The selected model is busy or at capacity. Retry in a moment.", 503);
+    }
+    if (/paid plan|billing method/i.test(message)) {
+      return fail("This model requires a paid Workers plan or billing method on your Cloudflare account.", 403);
+    }
+    return fail(message.slice(0, 600), 502);
+  }
 }
 
 export default {
@@ -404,7 +478,7 @@ export default {
       return withCors(json({
         ok: true,
         service: "zeplex-cloudflare-ai",
-        chatConfigured: Boolean((env.CF_ACCOUNT_ID || DEFAULT_ACCOUNT_ID) && env.CF_API_TOKEN),
+        chatConfigured: typeof env.AI?.run === "function",
         imageBindingConfigured: typeof env.AI?.run === "function",
         documentBindingConfigured: typeof env.AI?.toMarkdown === "function"
       }), request, env);
