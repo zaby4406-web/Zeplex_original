@@ -1,0 +1,16 @@
+# Local credentials — never commit these
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+
+# Allow the safe template file
+!.dev.vars.example
+
+# Wrangler / Node build output
+.wrangler/
+node_modules/
+dist/
+coverage/
+.DS_Store
+Thumbs.db
