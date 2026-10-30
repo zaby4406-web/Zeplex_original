@@ -1,3 +1,0 @@
-# Copy this file to .dev.vars and replace the placeholder with a NEW token.
-# Do not commit .dev.vars. The token shared in chat should be revoked.
-CF_API_TOKEN="PASTE_NEW_CLOUDFLARE_WORKERS_AI_TOKEN_HERE"
