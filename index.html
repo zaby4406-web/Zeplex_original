@@ -238,7 +238,7 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 "use strict";
 // The browser only knows the Worker URL. Cloudflare credentials stay in Worker secrets.
 const WORKER_BASE = (() => {
- try { return (localStorage.getItem('zx-worker-url') || '').trim().replace(/\\/+$/, ''); }
+ try { return (localStorage.getItem('zx-worker-url') || '').trim().replace(/\/+$/, ''); }
  catch { return ''; }
 })();
 const API = WORKER_BASE ? WORKER_BASE + '/api/v1' : '';
@@ -773,7 +773,7 @@ $('#saveworker').onclick=()=>{
  const raw=$('#workerurl').value.trim();
  if(!raw){try{localStorage.removeItem('zx-worker-url')}catch{}toast('Worker URL cleared. AI requests will stay disabled until one is set.');setTimeout(()=>location.reload(),500);return}
  try{
-  const u=new URL(raw.replace(/\\/api\\/v1\\/?$/,''));
+  const u=new URL(raw.replace(/\/api\/v1\/?$/,''));
   if(u.protocol!=='https:'&&u.hostname!=='localhost'&&u.hostname!=='127.0.0.1')throw new Error('Use an HTTPS Worker URL.');
   if(u.username||u.password||u.search||u.hash|| (u.pathname!=='/'&&u.pathname!==''))throw new Error('Enter the Worker base URL only, without a path.');
   localStorage.setItem('zx-worker-url',u.origin);
