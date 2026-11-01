@@ -9,23 +9,53 @@
  * Cloudflare Worker bindings/settings:
  *   AI                 Workers AI binding (chat, image generation + PDF conversion)
  *   ALLOWED_ORIGINS    Comma-separated exact website origins
+ *   PREMIUM_CODING     Optional. Set to "1" to let coding requests use the
+ *                      premium coding models first (Kimi K2.7 Code, then
+ *                      GLM 5.2). These need the Workers Paid plan and are
+ *                      billed per token, so they are OFF unless you opt in.
  *
  * Inference uses the native Workers AI binding. No API key or Account ID is
  * needed in this source file.
  */
+
+// ---------------------------------------------------------------------------
+// WHAT THIS BACKEND CAN DO (each line points at the code that does it)
+// ---------------------------------------------------------------------------
+// - Chat with streaming replies (Server-Sent Events, OpenAI-compatible frames)
+//     -> chatCompletion() + openAIStream()
+// - Everyday chat on a fast model                      -> TEXT_MODEL
+// - Coding on a dedicated strong coding model          -> CODE_MODEL
+// - Optional premium coding models with automatic fallback to CODE_MODEL
+//     -> PREMIUM_CODE_MODELS + modelChain()
+// - Deep reasoning ("thinking") on a large reasoning model -> REASONING_MODEL
+// - Understanding attached images (vision)             -> VISION_MODEL
+// - Generating images from a text prompt               -> imageCompletion()
+// - Reading attached PDFs (converted to Markdown)      -> convertPdfs()
+// - Automatic fallback to the next model when one is busy, unavailable or
+//   needs a paid plan                                  -> chatCompletion() retry loop
+// - Per-IP rate limiting and an origin allow-list      -> rateLimit(), originAllowed()
+// It does NOT browse the web, run code or store chats. Web search, link
+// reading, the code sandbox, previews and chat history run in the browser
+// (see the capability list at the top of the script in index.html).
+// ---------------------------------------------------------------------------
 const API_PREFIX = "/api/v1";
 const MAX_BODY_BYTES = 16 * 1024 * 1024;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_MESSAGES = 80;
 const MAX_TEXT_CHARS = 250_000;
-const MAX_OUTPUT_TOKENS = 12_000;
+const MAX_OUTPUT_TOKENS = 16_384;
 
 const TEXT_MODEL = "@cf/zai-org/glm-4.7-flash";
 const VISION_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const REASONING_MODEL = "@cf/nvidia/nemotron-3-120b-a12b";
 const IMAGE_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
+const CODE_MODEL = "@cf/openai/gpt-oss-120b";
 
-// All four are currently eligible for the shared 10,000-Neuron daily
+// Strongest coding models on Workers AI. They are not part of the free
+// allocation, so they are only tried when PREMIUM_CODING is enabled.
+const PREMIUM_CODE_MODELS = ["@cf/moonshotai/kimi-k2.7-code", "@cf/zai-org/glm-5.2"];
+
+// All five are currently eligible for the shared 10,000-Neuron daily
 // allocation. That allocation is shared across the account, not per model.
 const MODEL_CATALOG = [
   {
@@ -38,6 +68,18 @@ const MODEL_CATALOG = [
     eligible_for_daily_free_allocation: true,
     neurons_per_million_input_tokens: 5500,
     neurons_per_million_output_tokens: 36400
+  },
+  {
+    id: CODE_MODEL,
+    name: "GPT-OSS 120B · Coding",
+    context_length: 128000,
+    architecture: { input_modalities: ["text"], output_modalities: ["text"], modality: "text->text" },
+    supported_parameters: ["temperature", "max_tokens", "reasoning", "include_reasoning"],
+    top_provider: { max_completion_tokens: MAX_OUTPUT_TOKENS },
+    eligible_for_daily_free_allocation: true,
+    task: "code",
+    neurons_per_million_input_tokens: 31818,
+    neurons_per_million_output_tokens: 68182
   },
   {
     id: VISION_MODEL,
@@ -326,10 +368,11 @@ function openAIStream(source, model) {
     if (!payload || payload === "[DONE]") return;
     let event;
     try { event = JSON.parse(payload); } catch { return; }
-    const reasoning = event.reasoning || event.reasoning_content;
+    const delta = event.choices?.[0]?.delta || {};
+    const reasoning = event.reasoning || event.reasoning_content || delta.reasoning_content || delta.reasoning;
     const response = typeof event.response === "string"
       ? event.response
-      : (event.choices?.[0]?.delta?.content || "");
+      : (delta.content || "");
     if (reasoning) {
       controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({ reasoning })) + "\n\n"));
     }
@@ -383,12 +426,29 @@ function openAIStream(source, model) {
 
 function assistantText(result) {
   if (typeof result === "string") return result;
-  const reasoning = result?.reasoning || result?.reasoning_content || "";
+  const reasoning = result?.reasoning || result?.reasoning_content ||
+    result?.choices?.[0]?.message?.reasoning_content || "";
   const content = result?.response ||
     result?.choices?.[0]?.message?.content ||
     result?.output_text ||
     "";
   return (reasoning ? "<think>" + reasoning + "</think>\n\n" : "") + content;
+}
+
+function premiumCoding(env) {
+  return /^(1|true|yes|on)$/i.test(String(env.PREMIUM_CODING || "").trim());
+}
+
+// Models to try in order. Coding requests can start on a premium model and
+// fall back to the free-allocation coding model.
+function modelChain(selected, env) {
+  const chain = selected === CODE_MODEL && premiumCoding(env) ? [...PREMIUM_CODE_MODELS, CODE_MODEL] : [selected];
+  return [...new Set(chain)];
+}
+
+// Errors where trying the next model in the chain makes sense.
+function retryable(message) {
+  return /paid plan|billing method|capacity|overloaded|temporarily exceeded|no such model|not found|unknown model|5007|unavailable/i.test(message);
 }
 
 async function chatCompletion(request, env) {
@@ -432,10 +492,22 @@ async function chatCompletion(request, env) {
     input.chat_template_kwargs = { enable_thinking: true };
   }
 
+  const chain = modelChain(selected, env);
   try {
-    const result = await env.AI.run(selected, input);
+    let result, used, lastError;
+    for (const model of chain) {
+      try {
+        result = await env.AI.run(model, input);
+        used = model;
+        break;
+      } catch (error) {
+        lastError = error;
+        if (model === chain[chain.length - 1] || !retryable(String(error?.message || ""))) throw error;
+      }
+    }
+    if (!used) throw lastError || new Error("Workers AI inference failed.");
     if (input.stream) {
-      return new Response(openAIStream(result, selected), {
+      return new Response(openAIStream(result, used), {
         status: 200,
         headers: {
           "content-type": "text/event-stream; charset=utf-8",
@@ -451,7 +523,7 @@ async function chatCompletion(request, env) {
       id: "chatcmpl-" + crypto.randomUUID(),
       object: "chat.completion",
       created: Math.floor(Date.now() / 1000),
-      model: selected,
+      model: used,
       choices: [{ index: 0, message: { role: "assistant", content }, finish_reason: "stop" }],
       usage: result?.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
     });
@@ -486,6 +558,7 @@ export default {
         service: "zeplex-cloudflare-ai",
         chatConfigured: typeof env.AI?.run === "function",
         imageBindingConfigured: typeof env.AI?.run === "function",
+        premiumCoding: premiumCoding(env),
         documentBindingConfigured: typeof env.AI?.toMarkdown === "function"
       }), request, env);
     }

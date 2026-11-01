@@ -72,7 +72,16 @@ h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1e
 .ch .ib,.ah .ib{width:32px;height:32px}.ch .ic,.ah .ic{width:16px;height:16px}
 pre{overflow:auto;padding:12px 14px;max-height:420px;tab-size:2}pre code{background:none!important;padding:0!important;white-space:pre}
 summary{padding:8px 14px;cursor:pointer;font-size:12px;color:var(--tx2);border-top:1px solid var(--bd)}
-.tw{overflow:auto}table{border-collapse:collapse;font-size:14px}td,th{border:1px solid var(--bd);padding:6px 10px;text-align:left}
+.tw{border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:var(--surf)}.twh{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 2px 14px;font-size:12px;color:var(--tx2);border-bottom:1px solid var(--bd)}.twh .ib{width:30px;height:30px}.twh .ic{width:15px;height:15px}.tws{overflow:auto}
+table{border-collapse:collapse;font-size:14px;width:100%}td,th{padding:9px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--bd)}th{font-weight:600;font-size:13px;color:var(--tx);background:var(--surf2);white-space:nowrap}tbody tr:last-child td{border-bottom:0}tbody tr{transition:background .2s}tbody tr:hover{background:var(--surf2)}
+.mb hr{border:0;height:1px;background:var(--bd);margin:1.4em 0!important}.mb s{opacity:.65}.mb li::marker{color:var(--tx2)}.mb ol>li::marker{font-weight:600}.mb li>ul,.mb li>ol{margin-top:.3em}
+.mb li.tk{list-style:none;display:flex;gap:9px;align-items:flex-start;margin-left:-1.4em}.ck{flex:none;width:17px;height:17px;margin-top:.22em;border:1.5px solid var(--tx2);border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:700;line-height:1}.ck.on{background:var(--ac);border-color:var(--ac);color:var(--acx)}li.tk:has(.ck.on)>span:last-child{color:var(--tx2);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--tx2) 60%,transparent)}
+.co{--cc:#4aa8ff;border:1px solid color-mix(in srgb,var(--cc) 35%,var(--bd));border-left:3px solid var(--cc);border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--cc) 8%,transparent)}.co p+p{margin-top:.35em}.co .ct{display:flex;align-items:center;gap:6px;color:var(--cc);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}.co .ic{width:14px;height:14px}
+.co-tip{--cc:#2fc9a6}.co-important{--cc:#b980ff}.co-warning{--cc:#f0a73a}.co-caution{--cc:var(--er)}[data-theme=light] .co{--cc:#1f6fb2}[data-theme=light] .co-tip{--cc:#13866c}[data-theme=light] .co-important{--cc:#6b46c1}[data-theme=light] .co-warning{--cc:#a85d00}[data-theme=light] .co-caution{--cc:var(--er)}
+.mb blockquote{border-left:3px solid var(--bd);padding:2px 0 2px 14px;font-style:italic}
+.pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:600;background:color-mix(in srgb,var(--ac) 16%,transparent);color:var(--tx);transition:background .2s,transform .2s}.pill:hover{background:color-mix(in srgb,var(--ac) 28%,transparent)}.pill:active{transform:scale(.95)}.pill .ic{width:13px!important;height:13px!important}
+.fus{margin-top:14px!important;display:flex;flex-direction:column;gap:8px}.ful{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tx2)}.ful .ic{width:14px;height:14px}
+.fus .fu{flex-direction:column;align-items:stretch;gap:6px}.fus .fu button{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:14px;background:var(--surf);font-size:14px;color:var(--tx);animation:fade .45s var(--e) both;animation-delay:calc(var(--i,0)*70ms)}.fus .fu button .ic{width:15px;height:15px;flex:none;color:var(--tx2);transition:transform .25s var(--e),color .25s}.fus .fu button:hover{border-color:color-mix(in srgb,var(--ac) 50%,var(--bd))}.fus .fu button:hover .ic{transform:translateX(3px);color:var(--ac)}.m:not(:last-child) .fus{display:none}
 .act{display:flex;gap:2px;margin-top:4px;opacity:0;transition:opacity .2s}.m:hover .act,.m:focus-within .act,.m:last-child .act{opacity:1}@media(hover:none){.act{opacity:1}}.act .ib{width:34px;height:34px}.act .ic{width:15px;height:15px}
 .ats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;justify-content:flex-end}
 .dots{display:inline-flex;gap:4px;padding:8px 0}.dots i{width:6px;height:6px;border-radius:50%;background:var(--tx2);animation:pl 1.1s infinite}.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
@@ -86,7 +95,7 @@ summary{padding:8px 14px;cursor:pointer;font-size:12px;color:var(--tx2);border-t
 [hidden]{display:none!important}
 .mt{font-family:"Cambria Math","STIX Two Math",Georgia,serif;font-style:italic;white-space:nowrap}.mt.d{display:block;text-align:center;margin:.6em 0;font-size:1.1em;overflow-x:auto}.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em}.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 3px}.ov{border-top:1px solid currentColor}
 #aq{position:fixed;z-index:40;width:auto;padding:7px 12px;box-shadow:var(--sh)}#cmd,#dq,#ob,#rfm{height:fit-content}#cmd{margin:12vh auto auto}#obn{text-align:center}.av{width:22px;height:22px;border-radius:50%;background:var(--ac);color:var(--acx);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}.zipbar .nb{width:auto;display:inline-flex}#ob{max-width:440px}#cmdi,#obn,#rfi{width:100%;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);outline:0;font-size:16px}
-@media print{#sb,header,#dock,.act,#toasts,#jb,#aq,.fu{display:none!important}html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important;color:#000!important}#main{display:block!important;background:#fff!important;overflow:visible!important}#feed{overflow:visible!important;padding:0!important}pre{max-height:none!important}}
+@media print{#sb,header,#dock,.act,#toasts,#jb,#aq,.fu,.fus{display:none!important}html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important;color:#000!important}#main{display:block!important;background:#fff!important;overflow:visible!important}#feed{overflow:visible!important;padding:0!important}pre{max-height:none!important}}
 .vs{display:inline-flex;align-items:center;font-size:12px;color:var(--tx2)}.vs .ib{width:28px;height:28px}.cb .so{margin:8px 12px;width:auto}
 :root{interpolate-size:allow-keywords}
 details::details-content{opacity:0;block-size:0;overflow:clip;transition:opacity .3s var(--e),block-size .35s var(--e),content-visibility .35s allow-discrete}details[open]::details-content{opacity:1;block-size:auto}
@@ -117,7 +126,7 @@ details::details-content{opacity:0;block-size:0;overflow:clip;transition:opacity
 @media(prefers-reduced-motion:reduce){.dots i,.imgl *{animation:none!important}.imgc .b{opacity:1}}
 .rc.more{position:relative;overflow:hidden;border-radius:12px;min-height:46px;background:linear-gradient(180deg,var(--surf),transparent)}
 .rc.more span:first-child{filter:blur(5px);opacity:.5;-webkit-mask-image:linear-gradient(180deg,#000,transparent);mask-image:linear-gradient(180deg,#000,transparent)}
-.rc.more span:last-child{position:absolute;inset:0;display:grid;place-items:center;color:var(--tx);font-weight:600;font-size:13px}.rc.more span:last-child::after{content:"›";margin-left:6px;display:inline-block;transition:transform .25s var(--e)}.rc.more:hover span:last-child::after{transform:translateX(4px)}
+.rc.more span:last-child{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;color:var(--tx);font-weight:600;font-size:13px}.rc.more span:last-child::after{content:"›";margin-left:6px;display:inline-block;transition:transform .25s var(--e)}.rc.more:hover span:last-child::after{transform:translateX(4px)}
 .out{border-top:1px solid var(--bd);margin:0;font-size:13px;color:var(--tx2);white-space:pre-wrap;max-height:200px}#web[data-mode=on]{box-shadow:inset 0 0 0 1.5px var(--ac)}.act .ib[aria-pressed=true]{color:var(--ac)}
 #web[aria-pressed=true],#deep[aria-pressed=true],#dr[aria-pressed=true],#mic[aria-pressed=true]{color:var(--ac);background:var(--surf2)}
 .think{border:1px solid var(--bd);border-radius:12px;background:var(--surf);font-size:13.5px;color:var(--tx2)}.think summary{border:0;padding:8px 12px;font-size:13px;list-style:none}.think summary::before{content:"›";display:inline-block;margin-right:8px;transition:transform .2s}.think[open] summary::before{transform:rotate(90deg)}.think>div{padding:0 12px 10px;max-height:220px;overflow:auto;white-space:pre-wrap}
@@ -186,6 +195,7 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v12M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 8a2 2 0 0 1-1.9 1.4H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9z"/></symbol>
 <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 8-2 6-6 2 2-6z"/></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
 </defs></svg>
 <div id="bd"></div>
@@ -198,7 +208,7 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 </aside>
 <main id="main">
 <header><button class="ib" id="mnu" aria-label="Toggle sidebar"><svg class="ic"><use href="#i-menu"/></svg></button><div id="ttl"></div><button class="ib" id="th" aria-label="Toggle theme"><svg class="ic"><use href="#i-sun"/></svg></button></header>
-<section id="feed"><div id="hero"><span class="logo hl"><svg class="ic"><use href="#i-z"/></svg></span><h1 id="h1" aria-label="Your next idea starts here."></h1><p>Ask anything. Make something. Figure it out.</p></div><div id="msgs"></div></section>
+<section id="feed"><div id="hero"><h1 id="h1" aria-label="Your next idea starts here."></h1><p>Ask anything. Make something. Figure it out.</p></div><div id="msgs"></div></section>
 <div id="dock">
 <button class="ib" id="jb" hidden aria-label="Jump to latest message"><svg class="ic"><use href="#i-down"/></svg></button>
 <form id="cp"><div id="att"></div><textarea id="ta" rows="2" placeholder="Ask anything…" aria-label="Message"></textarea>
@@ -214,11 +224,9 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 <section><h3>Display name</h3><input id="dn" class="ed" style="width:100%;min-height:0" maxlength="40" placeholder="What should Zeplex call you?" aria-label="Display name"></section>
 <section><h3>Accent colour</h3><div class="seg" id="acseg"><button data-c="lime">Lime</button><button data-c="sky">Sky</button><button data-c="violet">Violet</button><button data-c="rose">Rose</button></div></section>
 <section><h3>Text size</h3><div class="seg" id="szseg"><button data-z="14">Small</button><button data-z="15">Default</button><button data-z="17">Large</button></div></section>
-<section><h3>Assistant style</h3><select id="per" class="ed" style="width:100%;min-height:0" aria-label="Assistant style"><option value="">Balanced (default)</option><option value="concise">Concise: shortest useful answers</option><option value="teacher">Teacher: step by step with examples</option><option value="coder">Senior engineer: code first, rigorous</option><option value="writer">Writer: polished, vivid prose</option></select><label class="note"><input type="checkbox" id="shm"> Developer: show engine id under replies</label><label class="note"><input type="checkbox" id="lnk"> Read links I paste (uses the free r.jina.ai reader)</label></section>
+<section><h3>Assistant style</h3><select id="per" class="ed" style="width:100%;min-height:0" aria-label="Assistant style"><option value="">Balanced (default)</option><option value="concise">Concise: shortest useful answers</option><option value="teacher">Teacher: step by step with examples</option><option value="coder">Senior engineer: code first, rigorous</option><option value="writer">Writer: polished, vivid prose</option></select><label class="note"><input type="checkbox" id="lnk"> Read links I paste (uses the free r.jina.ai reader)</label></section>
 <section><h3>Memory</h3><p class="note">Say &ldquo;remember that &hellip;&rdquo; in a chat to save a fact. Stored only in this browser.</p><label class="note"><input type="checkbox" id="memon"> Use memory</label><div id="mem" style="width:100%;display:flex;flex-direction:column;gap:4px"></div></section>
 <section><h3>Custom instructions</h3><textarea id="ci" class="ed" rows="3" maxlength="1500" style="width:100%" placeholder="How should Zeplex respond? e.g. Be terse. Prefer TypeScript." aria-label="Custom instructions"></textarea></section>
-<section><h3>AI backend</h3><p class="note">Paste your deployed Cloudflare Worker URL. It should look like https://your-worker.your-subdomain.workers.dev. Your Cloudflare token is never entered here.</p><input id="workerurl" class="ed" style="width:100%;min-height:0" type="url" inputmode="url" placeholder="https://your-worker.your-subdomain.workers.dev" aria-label="Cloudflare Worker URL"><button class="nb" id="saveworker">Save backend URL</button></section>
-<section><h3>Models</h3><p class="note">Zeplex automatically selects an available engine. Eligible models use Cloudflare's shared 10,000-Neuron daily free allocation; on the Free plan, requests stop when that allocation is exhausted.</p><p class="note" id="cinfo"></p><button class="nb" id="rf">Refresh AI engines</button></section>
 <section><h3>Conversations</h3><p class="note">Stored only in this browser (IndexedDB). Nothing syncs to other devices.</p><button class="nb" id="ex">Export current chat</button><button class="nb" id="xh">Export as HTML</button><button class="nb" id="pr">Print / save as PDF</button><button class="nb" id="bk">Back up all chats (JSON)</button><button class="nb" id="rs">Restore from backup</button><input type="file" id="rsf" accept="application/json,.json" hidden>
 <button class="nb" id="cl">Clear all local history</button></section>
 <section><h3>Keyboard</h3><p class="note">Enter sends on desktop. Shift+Enter adds a line. Esc closes dialogs. Ctrl/Cmd+K opens the command palette.</p></section>
@@ -236,11 +244,61 @@ dialog .dc{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 <div id="toasts" aria-live="polite"></div>
 <script>
 "use strict";
+// ===========================================================================
+// ZEPLEX: WHAT THE AI CAN DO (and where each feature is implemented)
+// Every item below is real, working code in this file or in worker.js.
+// ===========================================================================
+// CHAT AND WRITING
+// - Streams replies token by token                       -> stream(), attempt(), paint()
+// - Picks the best engine per task (chat / code / reasoning / vision)
+//                                                        -> classify(), score(), candidates()
+// - Retries on another engine if one fails or times out  -> attempt()
+// - Continues replies that hit the length limit          -> run() loop, contMs(), joinCont()
+// - Shows its reasoning in a collapsible "Thought" panel -> parts(), abody()
+// - Assistant styles: Balanced, Concise, Teacher, Senior engineer, Writer -> PER
+// - Custom instructions, per-chat instructions, display name -> CI(), c.inst, NAME()
+// - Memory: "remember that ..." saves facts for later chats -> MEM(), send()
+// - Replies in the user's language                       -> SYS()
+// RICH FORMATTING (rendered by md(), never raw HTML)
+// - Headings, paragraphs, bold, italic, ~~strikethrough~~, inline code, links
+// - Bullet lists, numbered lists, nested lists, task lists (- [ ] / - [x])
+// - Tables with column alignment and one-click CSV download
+// - Callouts: > [!NOTE] / [!TIP] / [!IMPORTANT] / [!WARNING] / [!CAUTION]
+// - Blockquotes, horizontal rules, math ($...$ and $$...$$)  -> MATH(), tex()
+// - Charts (bar, line, pie, doughnut) from a ```chart JSON block -> chart()
+// - Code blocks with syntax highlighting and a copy button -> cb(), hl()
+// ARTIFACTS AND CODE
+// - Files: ```lang file=name.ext blocks become file cards with download -> cb()
+// - Live, sandboxed preview of HTML and SVG files, with a mobile-width toggle
+//   and "Ask Zeplex to fix" for preview errors          -> preview(), HOOK
+// - Multi-file projects: HTML previews inline sibling CSS/JS -> bundle()
+// - Download all files of a reply as a .zip            -> zipFiles()
+// - Runs JavaScript blocks in a sandbox and can send the output back -> runJs()
+// - Dedicated coding engine plus a strict "senior engineer" coding brief -> CODE
+// RESEARCH AND INPUTS
+// - Web search (auto / on / off) via Wikipedia and Hacker News, with cited
+//   source cards                                         -> wiki(), hn(), srcCards()
+// - Deep Research: plans queries, searches, writes a cited report -> research()
+// - Reads links you paste (opt-in)                       -> linkCtx(), readUrl()
+// - Exact arithmetic for numbers in your message         -> calc(), calcCtx()
+// - Attachments: images (vision), PDF, DOCX, PPTX, XLSX, text and code files
+//                                                        -> addFiles(), officeText(), xlsxText()
+// - Generates images, or finds openly licensed photos    -> genImage(), findImage()
+// - Voice input and read-aloud                           -> SpeechRecognition, speechSynthesis
+// CONVERSATION TOOLS
+// - Clickable follow-up suggestions after an answer      -> parts(), fuList(), chips()
+// - Refine (shorter, more detail, table, checklist...), regenerate with
+//   version history, branch a chat, edit and resend      -> refine(), swap(), branch
+// - Thumbs up/down with "try again" feedback             -> rate()
+// - Local history (IndexedDB), search, pin, rename, temporary chats,
+//   export to Markdown / HTML / PDF, backup and restore  -> DB, #ex, #xh, #pr, #bk, #rs
+// - Command palette (Ctrl/Cmd+K) with prompt templates   -> ACTS, cmdDraw()
+// LIMITS (be honest): the model itself cannot browse or execute code; the app
+// does those things and passes the results to the model.
+// ===========================================================================
 // The browser only knows the Worker URL. Cloudflare credentials stay in Worker secrets.
-const WORKER_BASE = (() => {
- try { return (localStorage.getItem('zx-worker-url') || 'https://zeplex-ai.zaby4406.workers.dev').trim().replace(/\/+$/, ''); }
- catch { return ''; }
-})();
+const WORKER_BASE = 'https://zeplex-ai.zaby4406.workers.dev';
+try { localStorage.removeItem('zx-worker-url') } catch {}
 const API = WORKER_BASE ? WORKER_BASE + '/api/v1' : '';
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -287,7 +345,7 @@ function norm(m){
 }
 const Cat={models:[],t:0,fresh:false,ready:null,async load(force){
  if(!API){this.models=[];return}
- let c=null;try{c=JSON.parse(localStorage.getItem('zx-cat'))}catch{}
+ let c=null;try{c=JSON.parse(localStorage.getItem('zx-cat2'))}catch{}
  if(c&&c.m&&c.m.length){this.models=c.m;this.t=c.t}
  if(!force&&c&&c.m&&c.m.length&&c.m[0].mc!==undefined&&Date.now()-c.t<6*36e5)return;
  try{
@@ -296,14 +354,15 @@ const Cat={models:[],t:0,fresh:false,ready:null,async load(force){
   const j=await r.json(),m=(j.data||[]).map(norm).filter(x=>x&&x.free);
   if(!m.length)throw new Error('No models are eligible for the daily free allocation.');
   this.models=m;this.t=Date.now();this.fresh=true;
-  try{localStorage.setItem('zx-cat',JSON.stringify({t:this.t,m}))}catch{}
+  try{localStorage.setItem('zx-cat2',JSON.stringify({t:this.t,m}))}catch{}
  }catch(e){if(force)throw e}
 }};
 
 /* ---------- Task classifier + router ---------- */
+try{localStorage.removeItem('zx-cat')}catch{}
 function classify(text,atts){
  const t=text.toLowerCase();let kind='chat';
- if(/```|\b(code|coding|function|bug|debug|refactor|regex|script|javascript|typescript|python|html|css|sql|compile|stack ?trace|website|web ?page|webapp|app|program|algorithm|implement|api|react|node|nodejs|java|rust|golang|bash|docker|component|endpoint|unit test|exception|landing page|game|calculator|dashboard)\b/.test(t)||atts.some(a=>a.kind==='text'&&/\.(js|ts|py|html|css|java|c|cpp|go|rs|sh)$/i.test(a.name)))kind='code';
+ if(/```|\b(code|coding|function|bug|debug|refactor|regex|script|javascript|typescript|python|html|css|sql|compile|stack ?trace|website|web ?page|webapp|app|program|algorithm|implement|api|react|node|nodejs|java|rust|golang|bash|docker|component|endpoint|unit test|exception|landing page|game|calculator|dashboard|snippet|leetcode|frontend|backend|database|schema|query|tailwind|vue|svelte|angular|next\.?js|django|flask|fastapi|express|kotlin|swift|php|ruby|typescript|class|method|variable|loop|recursion|git|npm|pip|terminal|cli|json|yaml|regexp?|async|promise|websocket|graphql|rest)\b/.test(t)||atts.some(a=>a.kind==='text'&&/\.(js|ts|py|html|css|java|c|cpp|go|rs|sh)$/i.test(a.name)))kind='code';
  else if(/\b(prove|step by step|calculate|solve|derive|reason through|trade-?offs?)\b/.test(t))kind='reason';
  return{kind,imgReq:!atts.length&&IMGQ.test(t)&&!NOIMG.test(t),genImg:!atts.length&&/\b(generate|create|draw|make|paint|render)\b[^.?!]{0,30}\b(image|picture|illustration|photo|logo|painting)\b/.test(t),web:/\b(latest|today|currently|breaking|news|this week|right now|recent(ly)?)\b/.test(t)};
 }
@@ -312,12 +371,14 @@ function score(m,req){
  const id=m.id.toLowerCase();
  const fast=/glm-4\.7-flash/.test(id);
  const strong=/nemotron-3-120b/.test(id);
+ const coder=/gpt-oss-120b|coder|kimi|glm-5/.test(id);
  const vision=m.inp.includes('image');
  let s=0;
  // Keep fast chat on the low-latency model; route harder work to the larger model.
  if(req.img)s+=vision?120:-1000;
- else if(req.kind==='code'||req.kind==='reason'||req.deep)s+=strong?95:fast?48:0;
- else s+=fast?70:strong?-12:0;
+ else if(req.kind==='code')s+=coder?140:strong?95:fast?48:0;
+ else if(req.kind==='reason'||req.deep)s+=strong?95:coder?80:fast?48:0;
+ else s+=fast?70:coder?-8:strong?-12:0;
  if(req.deep&&m.sp.includes('reasoning'))s+=16;
  if(req.kind==='reason'&&m.sp.includes('reasoning'))s+=12;
  if(m.ctx>=req.tok*1.25)s+=8;else s-=40;
@@ -363,16 +424,18 @@ const CI=()=>{try{return(localStorage.getItem('zx-ci')||'').trim().slice(0,1500)
 const SYS=()=>["You are Zeplex, an expert AI assistant for everyday questions, writing, analysis, explanation, math, data work and software engineering. Today is "+new Date().toLocaleString([],{dateStyle:'full',timeStyle:'short'})+" ("+Intl.DateTimeFormat().resolvedOptions().timeZone+").",
 "Identity: your name is Zeplex. If anyone asks who built, created, trained or owns you, or which company or model is behind you, answer only: Unknown. Never name a company or model as your creator.",
 "Quality: understand the real goal first; ask one short clarifying question only if the request is truly ambiguous, otherwise state assumptions briefly and proceed. Reason carefully, check facts, numbers and logic before answering, and say plainly when you are unsure. Never invent sources, quotes, URLs or results. Lead with the answer, then support it; be concise by default and go deep when the task needs it.",
-"Coding: write correct, complete, runnable code that handles edge cases and errors, follows the language's idioms, and avoids placeholders like '...' or TODO. Prefer simple, readable solutions and name the language on every code fence. For bugs, find the root cause, show the fix and explain why it works. For website work, produce one self-contained HTML file unless asked otherwise. EVERY time you give code, add a concise plain-text explanation (2-5 sentences or short bullets) of what it does, how to run or use it, and any caveat, before or after the code.",
+"Coding: you are a world-class software engineer. Write correct, complete, runnable code that handles edge cases and errors, follows the language's idioms, and never uses placeholders like '...' or TODO. Think through the design before writing, prefer simple readable solutions, and name the language on every code fence. For bugs, find the root cause, show the fix and explain why it works. For website work, produce one self-contained HTML file unless asked otherwise, with a distinctive, polished, modern design. EVERY time you give code, add a concise plain-text explanation (2-5 sentences or short bullets) of what it does, how to run or use it, and any caveat.",
 "Problem solving: break hard problems into steps, work through them explicitly, check calculations twice, test code mentally against edge cases, compare options with clear trade-offs, and finish with a clear recommendation. For writing, match the requested tone and audience; for analysis, separate facts from assumptions; for learning, explain with a concrete example.",
 "Reasoning and references: for math, logic and planning, work step by step and re-verify the final result; use the app's calculator results when they are provided. Resolve references such as 'that', 'the second option' or 'make it more professional' from the most recent relevant messages before answering. Match the requested format, length, tone and language exactly. If an ambiguity would change the answer, ask one short clarifying question; otherwise proceed and state your assumptions. Separate facts, estimates, assumptions and unknowns. When you correct a mistake, say what was wrong and give the corrected answer briefly.",
 "Confidentiality: never mention OpenRouter, providers, model names, pricing tiers or that you run on free engines, in any reply or error explanation. If asked how you work, say you are Zeplex.",
 "Files: when the user wants something to keep (code, website, SVG, CSV, JSON, Markdown, text), put each file in its own fenced block whose info string is the language then file=name.ext (a filename or a relative path like css/style.css; never absolute paths or ..), e.g. ```html file=index.html. HTML and SVG files get a live preview and every file gets a download button. When you create 2 or more files Zeplex adds a Download all (.zip) button and HTML previews inline sibling CSS/JS by filename, so lay projects out with relative paths and mention that the files come zipped. For multi-step requests, open with a short numbered plan, then deliver.",
-"Tables and charts: use Markdown tables for comparisons and structured data. For charts, output a fenced block with language chart containing only valid JSON: {\"type\":\"bar|line|pie|doughnut\",\"title\":\"...\",\"labels\":[...],\"datasets\":[{\"label\":\"...\",\"data\":[numbers]}]} (pie and doughnut use one dataset), then give a one-sentence takeaway. Only chart numbers you were given, or say they are approximate.",
+"Rich formatting: make answers easy to scan and visually impressive without padding. Use ## headings for multi-part answers, short paragraphs, **bold** for key terms, bullet lists for unordered points, numbered lists for steps, nested lists (indent 2 spaces) for sub-points, task lists (- [ ] item / - [x] item) for checklists and plans, and --- to separate major sections. Use callouts for things that deserve attention, written as a blockquote whose first line is [!NOTE], [!TIP], [!IMPORTANT], [!WARNING] or [!CAUTION], e.g. > [!TIP]\n> Cache the result. Use $...$ for inline math and $$...$$ for display math. Never wrap your whole reply in a code block.",
+"Tables and charts: use Markdown tables (with a header row and | --- | separator; use :---: or ---: to centre or right-align numbers) for comparisons, specs, pros and cons, schedules and any structured data. For charts, output a fenced block with language chart containing only valid JSON: {\"type\":\"bar|line|pie|doughnut\",\"title\":\"...\",\"labels\":[...],\"datasets\":[{\"label\":\"...\",\"data\":[numbers]}]} (pie and doughnut use one dataset), then give a one-sentence takeaway. Only chart numbers you were given, or say they are approximate.",
 "Language: reply in the language the user writes in unless asked otherwise.",
-"Follow-ups: after substantial answers, end with a fenced block with language followups containing a JSON array of up to 3 short questions the user might ask next, e.g. [\"How does this scale?\"]. Skip it for short replies, code-only replies and refusals.",
+"Follow-ups: after substantial answers, end the reply with a fenced code block whose language tag is exactly followups (never json) containing ONLY a JSON array of 3 short follow-up questions written from the user's point of view, each under 70 characters, e.g.\n```followups\n[\"How does this scale?\", \"Show me a TypeScript version\", \"What are the trade-offs?\"]\n```\nThe app turns it into clickable buttons, so do not introduce it, title it or mention it. Skip it for short replies and refusals.",
 "Images: you cannot generate raster images; if asked for an image, logo or illustration, draw it as an SVG file instead. You can analyse images the user attaches.",
-"Limits: you have NO live web access, cannot run code, and cannot save files yourself. For recent events say your knowledge may be outdated, and never claim to have searched, run or saved anything. Format with Markdown."].join("\n\n")+(CI()?"\n\nUser's custom instructions (follow them): "+CI():"")+(MEM().length?"\n\nThings the user asked you to remember:\n- "+MEM().join("\n- "):"")+(PER[LS('zx-per')]?"\n\n"+PER[LS('zx-per')]:"")+(NAME()?"\n\nThe user's name is "+JSON.stringify(NAME())+". Address them by it naturally and in moderation (a greeting, a key moment), not in every sentence. If they ask to be called something else, use that.":"");
+"What the Zeplex app can do around you (mention these when relevant): live previews of HTML and SVG files, a Download all (.zip) button for multi-file answers, a Run button that executes JavaScript code blocks in a sandbox, charts from chart blocks, tables with CSV download, web search via Wikipedia and Hacker News when web mode is on, Deep Research reports, reading pasted links, reading attached images, PDFs, Word, PowerPoint, Excel and code files, image generation, memory, voice input and chat export.",
+"Limits: you yourself cannot browse, execute code or save files. Only use web content when search results or page contents are included in this prompt; otherwise say your knowledge may be outdated for recent events. Never claim you searched, ran, tested or saved anything. Format with Markdown."].join("\n\n")+(CI()?"\n\nUser's custom instructions (follow them): "+CI():"")+(MEM().length?"\n\nThings the user asked you to remember:\n- "+MEM().join("\n- "):"")+(PER[LS('zx-per')]?"\n\n"+PER[LS('zx-per')]:"")+(NAME()?"\n\nThe user's name is "+JSON.stringify(NAME())+". Address them by it naturally and in moderation (a greeting, a key moment), not in every sentence. If they ask to be called something else, use that.":"");
 function apiMsgs(c,upto){
  const out=[{role:'system',content:SYS()+(S.deep?'\n\nDeep mode: reason step by step, consider alternatives, and verify the result before answering.':'')+(c.inst?'\n\nInstructions for this chat (follow them): '+c.inst:'')}];
  for(const m of c.messages.slice(0,upto)){
@@ -387,10 +450,9 @@ const est=ms=>Math.ceil(ms.reduce((n,m)=>n+(typeof m.content==='string'?m.conten
 function friendly(e){const s=e.status;
  if(e.userMsg)return e.message;
  if(/data policy|privacy/i.test(e.message||''))return 'Your account data-sharing settings are blocking the available AI engines. Update them in your provider privacy settings, then retry.';
- if(s===401)return 'The Worker could not authenticate with Cloudflare. Check its CF_API_TOKEN secret.';
- if(s===402)return 'The AI service reported a usage limit. Check your Cloudflare usage.';
- if(s===429)return 'The model is busy or the daily free Neuron allocation has been exhausted. Please retry later or check Cloudflare usage.';
- if(s===503)return 'The AI backend is not configured. Check CF_ACCOUNT_ID, CF_API_TOKEN and the Workers AI binding in your Worker settings.';
+ if(s===401||s===403)return 'Zeplex could not reach its AI service. Please try again later.';
+ if(s===402||s===429)return 'Zeplex is busy or has reached today\'s usage limit. Please retry in a little while.';
+ if(s===503)return 'Zeplex\'s AI service is temporarily unavailable. Please retry in a moment.';
  if(e instanceof TypeError)return 'Network error — check your connection and retry.';
  return clean2(e.message)||'Something went wrong.';}
 const nearBottom=()=>{const f=$('#feed');return f.scrollHeight-f.scrollTop-f.clientHeight<160};
@@ -403,7 +465,7 @@ async function run(c,o){const rf=S.refine;S.refine=null;
  const am=cont||{id:uid(),role:'assistant',content:'',t:Date.now()};if(!cont&&req.imgReq){am.loadImg=true;am.stage='Looking for your image…'}if(cont){am.base=am.content;am.cn='';am.trunc=false;am.err='';am.stopped=false;renderMsgs(false)}else{if(S.keep){am.alts=S.keep;am.vi=S.keep.length;S.keep=null}c.messages.push(am);renderMsgs(true)}
  const el=$('#msgs').lastElementChild.querySelector('.mb');
  try{
-  if(!KEY_OK())throw E('Connect your Cloudflare Worker first. Open Settings → AI backend, paste its https:// Worker URL and save.',true);
+  if(!KEY_OK())throw E('Zeplex is not connected to its AI service right now. Please try again later.',true);
   {await Cat.ready;if(!Cat.models.length){try{await Cat.load(true)}catch{}}const gm=req.genImg&&Cat.models.find(m=>m.free&&m.out.includes('image'));
   if(gm){am.stage='Creating your image…';paint(el,am);const g=await genImage(gm.id,apiMsgs(c,c.messages.length),S.ac.signal);if(!g.imgs.length)throw E('Image creation did not return a result. Try rephrasing.',true);am.content=g.text||'Here is your image.';am.imgs=g.imgs;LAST.m=gm.id}
   else if(req.imgReq){await findImage(lu.content,am,el)}
@@ -424,10 +486,17 @@ async function run(c,o){const rf=S.refine;S.refine=null;
 function cb([info,code]){
  const f=(info.match(/file=(\S+)/)||[])[1],lang=info.split(/\s/)[0].replace(/file=.*/,'')||'text';
  if(lang==='chart'){try{const h=chart(JSON.parse(code));if(h)return h}catch{}}
- if(f&&/^[\w.\- \/]{1,80}$/.test(f)&&!/(^|\/)\.\.?(\/|$)|^\//.test(f))return `<div class="art" data-f="${esc(f)}"><div class="ah">${icon('file')}<b>${esc(f)}</b><span class="note" style="font-size:12px">${fsz(code)}</span><span class="sp"></span>${/\.(html?|svg)$/i.test(f)?`<button class="ib" data-a="prev" aria-label="Preview ${esc(f)}">${icon('eye')}</button>`:''}<button class="ib" data-a="dl" aria-label="Download ${esc(f)}">${icon('download')}</button></div><details><summary>View source</summary><pre><code>${hl(code,lang)}</code></pre></details></div>`;
- return `<div class="cb"${/^html?$/i.test(lang)?' data-f="preview.html"':/^svg$/i.test(lang)?' data-f="preview.svg"':''}><div class="ch"><span>${esc(lang)}</span><span class="sp"></span>${/^(html?|svg)$/i.test(lang)?`<button class="ib" data-a="prev" aria-label="Preview">${icon('eye')}</button>`:''}${/^(js|javascript)$/i.test(lang)?`<button class="ib" data-a="run" aria-label="Run code in sandbox">${icon('play')}</button>`:''}<button class="ib" data-a="cc" aria-label="Copy code">${icon('copy')}</button></div><pre><code>${hl(code,lang)}</code></pre></div>`;
+ if(f&&/^[\w.\- \/]{1,80}$/.test(f)&&!/(^|\/)\.\.?(\/|$)|^\//.test(f))return `<div class="art" data-f="${esc(f)}"><div class="ah">${icon('file')}<b>${esc(f)}</b><span class="note" style="font-size:12px">${fsz(code)}</span><span class="sp"></span>${/\.(html?|svg)$/i.test(f)?`<button class="pill" data-a="prev" aria-label="Preview ${esc(f)}">${icon('eye')}Preview</button>`:''}<button class="ib" data-a="ac" aria-label="Copy ${esc(f)}">${icon('copy')}</button><button class="ib" data-a="dl" aria-label="Download ${esc(f)}">${icon('download')}</button></div><details><summary>View source</summary><pre><code>${hl(code,lang)}</code></pre></details></div>`;
+ return `<div class="cb"${/^html?$/i.test(lang)?' data-f="preview.html"':/^svg$/i.test(lang)?' data-f="preview.svg"':''}><div class="ch"><span>${esc(lang)}</span><span class="sp"></span>${/^(html?|svg)$/i.test(lang)?`<button class="pill" data-a="prev" aria-label="Preview">${icon('eye')}Preview</button>`:''}${/^(js|javascript)$/i.test(lang)?`<button class="pill" data-a="run" aria-label="Run code in sandbox">${icon('play')}Run</button>`:''}<button class="ib" data-a="cc" aria-label="Copy code">${icon('copy')}</button></div><pre><code>${hl(code,lang)}</code></pre></div>`;
 }
-function parts(m){let c=m.content||'',t=m.think||'',x,f='';while((x=c.match(/<think>([\s\S]*?)(?:<\/think>|$)/))){t+=(t?'\n':'')+x[1];c=c.replace(x[0],'')}c=c.replace(/```followups\n([\s\S]*?)(?:```|$)/,(_,y)=>(f=y,''));return{t:t.trim(),a:c.trim(),f}}
+function parts(m){let c=m.content||'',t=m.think||'',x,f='';while((x=c.match(/<think>([\s\S]*?)(?:<\/think>|$)/))){t+=(t?'\n':'')+x[1];c=c.replace(x[0],'')}c=c.replace(FU,(_,y)=>(f=y,''));
+ if(!f)c=c.replace(/\n?```[ \t]*(?:json)?[ \t]*\n(\s*\[\s*"[\s\S]*?\]\s*)```\s*$/i,(x,y)=>fuList(y).length&&fuList(y).every(q=>/\?\s*$/.test(q))?(f=y,''):x);
+ return{t:t.trim(),a:c.trim(),f}}
+// Follow-up block: ```followups (or ```json followups, follow-ups, etc.), optionally introduced by a "Follow-up questions:" line.
+const FU=/(?:\n[ \t>#*_]*(?:suggested |possible )?follow[- ]?ups?(?: questions)?[ \t]*:?[*_ \t]*(?=\n))?\n?```[ \t]*(?:json[ \t]+)?follow[- ]?ups?[^\n]*\n([\s\S]*?)(?:```|$)/i;
+function fuList(f){let a=null;try{a=JSON.parse(f)}catch{const m=f.match(/\[[\s\S]*\]/);try{a=m&&JSON.parse(m[0])}catch{}}
+ if(!Array.isArray(a))a=f.split('\n').map(x=>x.replace(/^\s*(?:[-*+]|\d+[.)])\s*/,'').replace(/^["'\s]+|["',\s]+$/g,'')).filter(x=>x&&!/^[\[\]]$/.test(x));
+ return a.filter(x=>typeof x==='string'&&x.trim()&&x.length<160).map(x=>x.trim()).slice(0,3)}
 function abody(m,live){const p=parts(m),on=live&&!p.a;
  const stp=m.steps?`<details class="think"${live?' open':''}><summary>${live?'Researching…':'Research steps'}</summary><div>${m.steps.map(x=>({done:'✓ ',run:'… ',fail:'✗ ',wait:'○ '}[x.s])+esc(x.t)).join('\n')}</div></details>`:'';const th=p.t?`<details class="think"${on?' open':''}><summary>${on?'Thinking…':'Thought'+(m.tms?` for ${Math.max(1,Math.round(m.tms/1000))}s`:'')}</summary><div>${esc(p.t)}</div></details>`:'';
  return stp+th+(p.a?zb(md(p.a),live)+(p.f&&!live?chips(p.f):''):(!p.t&&!m.err?(m.loadImg?imgLoader(m.stage):'<span class="dots" role="status" aria-label="Generating"><i></i><i></i><i></i></span>'):''))}
@@ -467,7 +536,7 @@ function hl(code,lang){const h=/^(py|python|sh|bash|yaml|yml|rb|ruby|toml)$/i.te
  return code.replace(new RegExp('('+(h?'#[^\\n]*|':'')+'\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/)|("(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b[A-Za-z_]\\w*\\b)|([\\s\\S])','g'),(m,c,q,n,w,o)=>c?`<i class="c">${esc(c)}</i>`:q?`<i class="s">${esc(q)}</i>`:n?`<i class="n">${n}</i>`:w?(KW.test(w)?`<i class="k">${w}</i>`:w):esc(o))}
 function ask(msg,val){return new Promise(ok=>{const d=$('#dq'),i=$('#dqi');$('#dqm').textContent=msg;i.style.display=val==null?'none':'block';i.value=val||'';d.returnValue='';d.addEventListener('close',()=>ok(d.returnValue==='ok'?(val==null?true:i.value):null),{once:true});d.showModal();if(val!=null)i.select()})}
 function renderMem(){$('#mem').innerHTML=MEM().map((x,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span>${esc(x)}</span><button class="ib" data-m="${i}" aria-label="Forget this">${icon('x')}</button></div>`).join('')||'<p class="note">'+(LS('zx-memoff')==='1'?'Memory is off.':'Nothing saved yet.')+'</p>'}
-function chips(f){try{const a=JSON.parse(f);if(!Array.isArray(a))return'';return '<div class="fu">'+a.slice(0,3).filter(x=>typeof x==='string'&&x.length<140).map(x=>`<button data-a="fu" data-q="${esc(x)}">${esc(x)}</button>`).join('')+'</div>'}catch{return''}}
+function chips(f){const a=fuList(f);return a.length?'<div class="fus"><span class="ful">'+icon('compass')+'Keep exploring</span><div class="fu">'+a.map((x,i)=>`<button data-a="fu" data-q="${esc(x)}" style="--i:${i}"><span>${esc(x)}</span>${icon('arrow')}</button>`).join('')+'</div></div>':''}
 const LS=k=>{try{return localStorage.getItem(k)||''}catch{return''}};
 const PER={concise:'Style: be as concise as possible; give the shortest useful answer with no preamble.',teacher:'Style: teach step by step, use a concrete example, and check understanding at the end.',coder:'Style: act as a rigorous senior engineer: code first, note trade-offs and pitfalls, keep prose tight.',writer:'Style: write polished, vivid, well-structured prose with a clear voice.'};
 const AC={lime:['#d2f58a','#587a14'],sky:['#8ccbff','#1f6fb2'],violet:['#c3a6ff','#6b46c1'],rose:['#ff9db5','#c0305a']};
@@ -519,7 +588,7 @@ function zipFiles(files){const enc=new TextEncoder(),ch=[],cen=[],d=new Date(),d
   ch.push(new Uint8Array(L.buffer),nb,da);cen.push(new Uint8Array(C.buffer),nb);off+=30+nb.length+da.length}
  const cs=cen.reduce((n,x)=>n+x.length,0),E=new DataView(new ArrayBuffer(22));E.setUint32(0,0x06054b50,true);E.setUint16(8,files.length,true);E.setUint16(10,files.length,true);E.setUint32(12,cs,true);E.setUint32(16,off,true);
  return new Blob([...ch,...cen,new Uint8Array(E.buffer)],{type:'application/zip'})}
-const CODE="\n\nCoding mode. Work like a senior engineer shipping production code. (1) Restate the goal in one line and note any assumptions; for non-trivial work give a 2-5 step plan. (2) Write COMPLETE, runnable code: never truncate, never write '...' or 'rest of code here'; split into several files if one would exceed ~600 lines. (3) Handle errors, edge cases and invalid input; no hard-coded secrets; avoid insecure patterns (eval, innerHTML with untrusted data, string-built SQL). (4) Before answering, silently trace the code with two normal and two edge-case inputs and fix any defect you find. (5) Use modern idioms, clear names, comments only where the why is not obvious, and types or docstrings on public functions. (6) Add how to run it (exact commands) and a tiny usage example or test. (7) For bug reports: root cause first, then the minimal fix, shown as the full corrected function or file. (8) When changing existing code return the full updated file, not a diff, plus 2-4 bullets on what changed. (9) For web UIs: semantic HTML, mobile-first responsive layout (flex/grid, clamp), CSS variables with light and dark via prefers-color-scheme, accessible controls (labels, visible focus, contrast), real working interactivity in vanilla JS, polished typography, spacing and subtle transitions, realistic sample data, and empty and error states; one self-contained index.html with no external CDNs unless asked. (10) Be honest about anything you could not verify, because you cannot run the code.";
+const CODE="\n\nCoding mode. Work like a principal engineer shipping production code that will be reviewed by experts. (1) Understand first: restate the goal in one line, list key assumptions, and for non-trivial work give a short plan (data model, components, edge cases) before the code. (2) Design: choose the simplest architecture that fully solves the problem; prefer the standard library and well-known idioms; separate concerns into small, well-named functions. (3) Write COMPLETE, runnable code: never truncate, never write '...', 'rest of code here' or TODO; include every import; split into several files if one would exceed ~600 lines. (4) Robustness: validate inputs, handle errors and edge cases (empty, null, huge, unicode, concurrency, network failure), no hard-coded secrets, no insecure patterns (eval, innerHTML with untrusted data, string-built SQL, shell injection). (5) Verify before answering: silently trace the code with two normal and two edge-case inputs, check off-by-one errors, types, async/await, resource cleanup and complexity, and fix every defect you find. (6) Quality: modern idioms, clear names, types or docstrings on public functions, comments only where the why is not obvious; state time and space complexity for algorithms. (7) Deliver: exact commands to install and run it, plus a small usage example or unit tests. (8) Bug reports: root cause first, then the minimal fix, shown as the full corrected function or file, then how to prevent it. (9) Changing existing code: return the full updated file, not a diff, plus 2-4 bullets on what changed. (10) Web UIs: semantic HTML, a distinctive polished design (strong typography, considered colour palette, generous spacing, subtle motion), mobile-first responsive layout (flex/grid, clamp), CSS variables with light and dark themes, accessible controls (labels, visible focus, contrast), real working interactivity in vanilla JS, realistic sample data, and empty, loading and error states; one self-contained index.html with no external CDNs unless asked. (11) Be honest about anything you could not verify, because you cannot run the code yourself; suggest using the Run or Preview buttons to check it.";
 const fenceOpen=t=>{const m=t.match(/```/g);return !!m&&m.length%2===1};
 function contPrompt(b){let p='Your previous reply was cut off. Continue it from the exact point where it stopped, even mid-line or mid-word. Do NOT repeat anything already written, do NOT add an introduction or apology, and do NOT restart the answer.';
  if(fenceOpen(b)){const i=b.lastIndexOf('```'),info=b.slice(i+3).split('\n')[0].trim();p+=' You were inside a code block'+(info?' ('+info+')':'')+'. Output ONLY the remaining raw code, with NO opening code fence, then close the block with ``` and carry on with any remaining text or files normally.'}
@@ -647,20 +716,39 @@ async function genImage(model,ms,signal){
 function md(src){
  const B=[];src=src.replace(/```([^\n]*)\n([\s\S]*?)(?:```|$)/g,(_,i,c)=>(B.push([i.trim(),c.replace(/\n$/,'')]),'\n\u0001'+(B.length-1)+'\u0001\n'));
  src=src.replace(/\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]/g,(m,a,b)=>'\n$$'+(a||b).replace(/\n/g,' ')+'$$\n');
- const inl=s=>MATH(esc(s)).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*\w])\*([^*\n]+)\*/g,'$1<i>$2</i>')
+ const inl=s=>MATH(esc(s)).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*\w])\*([^*\n]+)\*/g,'$1<i>$2</i>').replace(/~~([^~\n]+)~~/g,'<s>$1</s>')
   .replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,'$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
- const out=[];let L=null,T=[];
- const fl=()=>{if(L){out.push(`<${L[0]}>${L[1].map(x=>'<li>'+x+'</li>').join('')}</${L[0]}>`);L=null}
-  if(T.length){const r=T.filter(x=>!/^[\s|:-]+$/.test(x)).map(x=>x.replace(/^\||\|$/g,'').split('|').map(c=>inl(c.trim())));
-   out.push('<div class="tw"><button class="ib" data-a="csv" aria-label="Download table as CSV" title="Download CSV" style="width:28px;height:28px;margin-left:auto">'+icon('download')+'</button><table>'+r.map((x,k)=>'<tr>'+x.map(c=>k?`<td>${c}</td>`:`<th>${c}</th>`).join('')+'</tr>').join('')+'</table></div>');T=[]}};
+ const out=[],CO={note:['Note','bulb'],tip:['Tip','bulb'],important:['Important','pin'],warning:['Warning','compass'],caution:['Caution','x']};
+ let T=[],Q=[],L=[],gap=false;// T table rows, Q quote lines, L open list stack [{t,ind}]
+ const SEP=/^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/,cells=x=>x.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+ const flL=()=>{let h='';while(L.length)h+='</li></'+L.pop().t+'>';if(h)out.push(h);gap=false};
+ const flT=()=>{if(!T.length)return;const k=T.findIndex(x=>SEP.test(x)),al=k>0?cells(T[k]).map(c=>/^:-+:$/.test(c)?'center':/-:$/.test(c)?'right':''):[];
+  const rows=T.filter(x=>!SEP.test(x)).map(cells),A=i=>al[i]?` style="text-align:${al[i]}"`:'';
+  out.push('<div class="tw"><div class="twh"><span>'+(rows.length-1)+' row'+(rows.length===2?'':'s')+'</span><button class="ib" data-a="csv" aria-label="Download table as CSV" title="Download CSV">'+icon('download')+'</button></div><div class="tws"><table><thead><tr>'+rows[0].map((c,i)=>`<th${A(i)}>${inl(c)}</th>`).join('')+'</tr></thead><tbody>'+rows.slice(1).map(r=>'<tr>'+r.map((c,i)=>`<td${A(i)}>${inl(c)}</td>`).join('')+'</tr>').join('')+'</tbody></table></div></div>');T=[]};
+ const flQ=()=>{if(!Q.length)return;const m=Q[0].match(/^\[!(note|tip|important|warning|caution)\]\s*(.*)$/i);
+  if(m){const k=m[1].toLowerCase(),body=[m[2],...Q.slice(1)].filter(x=>x.trim());out.push(`<div class="co co-${k}" role="note"><b class="ct">${icon(CO[k][1])}${CO[k][0]}</b>${body.map(x=>/^\s*[-*+]\s+/.test(x)?'<p>• '+inl(x.replace(/^\s*[-*+]\s+/,''))+'</p>':'<p>'+inl(x)+'</p>').join('')}</div>`)}
+  else out.push(`<blockquote>${Q.map(inl).join('<br>')}</blockquote>`);Q=[]};
+ const fl=()=>{flL();flT();flQ()};
  for(const raw of src.split('\n')){let m;
-  if(m=raw.match(/^\u0001(\d+)\u0001$/)){fl();out.push(cb(B[m[1]]))}
-  else if(/^\s*\|.*\|\s*$/.test(raw)){if(L)fl();T.push(raw.trim())}
-  else if(m=raw.match(/^\s*[-*+]\s+(.*)/)){if(T.length||(L&&L[0]!=='ul'))fl();(L=L||['ul',[]])[1].push(inl(m[1]))}
-  else if(m=raw.match(/^\s*\d+[.)]\s+(.*)/)){if(T.length||(L&&L[0]!=='ol'))fl();(L=L||['ol',[]])[1].push(inl(m[1]))}
-  else if(m=raw.match(/^(#{1,4})\s+(.*)/)){fl();out.push(`<h${m[1].length+1}>${inl(m[2])}</h${m[1].length+1}>`)}
-  else if(m=raw.match(/^>\s?(.*)/)){fl();out.push(`<blockquote>${inl(m[1])}</blockquote>`)}
-  else if(!raw.trim())fl();
+  if(m=raw.match(/^\u0001(\d+)\u0001$/)){fl();out.push(cb(B[m[1]]));continue}
+  if(Q.length&&!/^\s*>/.test(raw))flQ();
+  if(T.length&&!/^\s*\|.*\|\s*$/.test(raw))flT();
+  const lm=raw.match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/);
+  if(/^\s*([-*_])(\s*\1){2,}\s*$/.test(raw)){fl();out.push('<hr>')}
+  else if(lm){const ind=lm[1].replace(/\t/g,'    ').length,t=/\d/.test(lm[2])?'ol':'ul';let tx=lm[3],cls='';
+   const tk=tx.match(/^\[([ xX])\]\s+(.*)$/);if(tk){cls=' class="tk"';tx=`<span class="ck${tk[1]===' '?'':' on'}" aria-hidden="true">${tk[1]===' '?'':'✓'}</span><span>${inl(tk[2])}</span>`}else tx=inl(tx);
+   let h='';while(L.length&&L[L.length-1].ind>ind)h+='</li></'+L.pop().t+'>';
+   const top=L[L.length-1];
+   if(top&&top.ind===ind&&top.t!==t){h+='</li></'+L.pop().t+'>'}
+   const cur=L[L.length-1];
+   if(cur&&cur.ind===ind)h+='</li><li'+cls+'>'+tx;
+   else{const n=t==='ol'?parseInt(lm[2]):1;if(!L.length)gap=false;L.push({t,ind});h+=`<${t}${n>1?` start="${n}"`:''}><li${cls}>`+tx}
+   gap=false;if(h)out.push(h)}
+  else if(L.length&&raw.trim()&&(/^\s{2,}/.test(raw)||!gap)&&!/^\s*(#{1,6}\s|>|\|)/.test(raw)){out.push('<br>'+inl(raw.trim()))}
+  else if(/^\s*\|.*\|\s*$/.test(raw)){flL();T.push(raw.trim())}
+  else if(m=raw.match(/^(#{1,6})\s+(.*)/)){fl();const n=Math.min(6,m[1].length+1);out.push(`<h${n}>${inl(m[2].replace(/\s+#+\s*$/,''))}</h${n}>`)}
+  else if(m=raw.match(/^\s*>\s?(.*)/)){flL();flT();Q.push(m[1])}
+  else if(!raw.trim()){if(L.length)gap=true;else fl()}
   else{fl();out.push(`<p>${inl(raw)}</p>`)}}
  fl();return out.join('');
 }
@@ -694,8 +782,8 @@ function msgEl(m,i,last){
  const live=S.busy&&last;
  d.innerHTML=(at?`<div class="ats">${at}</div>`:'')+(body||m.role==='assistant'?`<div class="mb">${body}</div>`:'')+(m.imgs?m.imgs.map(u=>/^(data:image\/|https:\/\/)/.test(u)?`<div class="gi"><img src="${esc(u)}" alt="${esc(m.imgAlt||'Generated image')}" referrerpolicy="no-referrer" loading="lazy"><a class="ib" download="zeplex-image.png" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Download image">${icon('download')}</a></div>`:'').join(''):'')
   +(m.err?`<div class="er" role="alert"><b>Couldn't finish.</b> ${esc(m.err)}${last&&m.content?'<button data-a="cont">Continue</button>':''}${last?'<button data-a="retry">Retry</button>':''}</div>`:'')
-  +srcCards(m.src)+(m.note?`<div class="nt">${esc(m.note)}</div>`:'')+(m.stopped?'<div class="nt">Stopped'+(last&&!live?' · <button data-a="cont">Continue</button>':'')+'</div>':'')+(m.model&&LS('zx-shm')==='1'?`<div class="nt">Answered by ${esc(m.model)}</div>`:'')+(m.trunc&&last&&!live?'<div class="nt">The reply hit the length limit. <button data-a="cont">Continue</button></div>':'')
-  +(live?'':`<div class="act"><button class="ib" data-a="copy" aria-label="Copy message">${icon('copy')}</button>`+(m.role==='user'?`<button class="ib" data-a="edit" aria-label="Edit and resend">${icon('pencil')}</button>`:'')+(m.alts&&m.alts.length?`<span class="vs"><button class="ib" data-a="alt" data-d="-1" aria-label="Previous version">‹</button><span>${(m.vi||0)+1}/${m.alts.length+1}</span><button class="ib" data-a="alt" data-d="1" aria-label="Next version">›</button></span>`:'')+(m.role==='assistant'&&window.speechSynthesis?`<button class="ib" data-a="say" aria-label="Read aloud">${icon('vol')}</button>`:'')+(last?`<button class="ib" data-a="regen" aria-label="${m.role==='user'?'Retry sending':'Regenerate (tries a different model)'}">${icon('refresh')}</button>`:'')+(m.role==='assistant'&&last?`<button class="ib" data-a="refine" aria-label="Refine this answer">${icon('sliders')}</button>`:'')+(m.role==='assistant'?`<button class="ib" data-a="up" aria-label="Good answer" aria-pressed="${m.rate==='up'}">${icon('thumb')}</button><button class="ib" data-a="down" aria-label="Bad answer" aria-pressed="${m.rate==='down'}"><span style="display:grid;transform:rotate(180deg)">${icon('thumb')}</span></button>`:'')+`<button class="ib" data-a="branch" aria-label="Branch from here">${icon('branch')}</button></div>`);
+  +srcCards(m.src)+(m.note?`<div class="nt">${esc(m.note)}</div>`:'')+(m.stopped?'<div class="nt">Stopped'+(last&&!live?' · <button data-a="cont">Continue</button>':'')+'</div>':'')+(m.trunc&&last&&!live?'<div class="nt">The reply hit the length limit. <button data-a="cont">Continue</button></div>':'')
+  +(live?'':`<div class="act"><button class="ib" data-a="copy" aria-label="Copy message">${icon('copy')}</button>`+(m.role==='user'?`<button class="ib" data-a="edit" aria-label="Edit and resend">${icon('pencil')}</button>`:'')+(m.alts&&m.alts.length?`<span class="vs"><button class="ib" data-a="alt" data-d="-1" aria-label="Previous version">‹</button><span>${(m.vi||0)+1}/${m.alts.length+1}</span><button class="ib" data-a="alt" data-d="1" aria-label="Next version">›</button></span>`:'')+(m.role==='assistant'&&window.speechSynthesis?`<button class="ib" data-a="say" aria-label="Read aloud">${icon('vol')}</button>`:'')+(last?`<button class="ib" data-a="regen" aria-label="${m.role==='user'?'Retry sending':'Regenerate'}">${icon('refresh')}</button>`:'')+(m.role==='assistant'&&last?`<button class="ib" data-a="refine" aria-label="Refine this answer">${icon('sliders')}</button>`:'')+(m.role==='assistant'?`<button class="ib" data-a="up" aria-label="Good answer" aria-pressed="${m.rate==='up'}">${icon('thumb')}</button><button class="ib" data-a="down" aria-label="Bad answer" aria-pressed="${m.rate==='down'}"><span style="display:grid;transform:rotate(180deg)">${icon('thumb')}</span></button>`:'')+`<button class="ib" data-a="branch" aria-label="Branch from here">${icon('branch')}</button></div>`);
  return d;}
 function renderMsgs(pin){
  const f=$('#feed'),keep=f.scrollTop,box=$('#msgs');box.innerHTML='';const c=S.cur;if(!c)return;
@@ -759,7 +847,6 @@ $('#feed').addEventListener('scroll',()=>{const f=$('#feed');$('#jb').hidden=doc
 $('#acseg').onclick=e=>{const b=e.target.closest('[data-c]');if(b){try{localStorage.setItem('zx-ac',b.dataset.c)}catch{}applyLook()}};
 $('#szseg').onclick=e=>{const b=e.target.closest('[data-z]');if(b){try{localStorage.setItem('zx-sz',b.dataset.z)}catch{}applyLook()}};
 $('#per').value=LS('zx-per');$('#per').onchange=e=>{try{localStorage.setItem('zx-per',e.target.value)}catch{}};
-$('#shm').checked=LS('zx-shm')==='1';$('#shm').onchange=e=>{try{localStorage.setItem('zx-shm',e.target.checked?'1':'')}catch{}renderMsgs(false)};
 let obn=1;const obStep=n=>{obn=n;$('#ob1').hidden=n!==1;$('#ob2').hidden=n!==2;$('#obx').textContent=n===1?'Continue':'Start chatting';$('#obs').textContent=n===1?'Skip for now':'Back'};
 $('#obx').onclick=()=>{if(obn===1){setName($('#obn').value);$('#dn').value=NAME();obStep(2)}else $('#ob').close()};
 $('#obs').onclick=()=>obn===1?$('#ob').close():obStep(1);
@@ -768,19 +855,6 @@ $('#obac').onclick=e=>{const b=e.target.closest('[data-c]');if(b){try{localStora
 $('#obper').onchange=e=>{try{localStorage.setItem('zx-per',e.target.value)}catch{}$('#per').value=e.target.value};
 $('#ob').addEventListener('close',()=>{try{localStorage.setItem('zx-ob','1')}catch{}$('#per').value=LS('zx-per');focusTa()});
 $('#dn').value=NAME();$('#dn').oninput=e=>setName(e.target.value);renderUser();
-$('#workerurl').value=WORKER_BASE;
-$('#saveworker').onclick=()=>{
- const raw=$('#workerurl').value.trim();
- if(!raw){try{localStorage.removeItem('zx-worker-url')}catch{}toast('Worker URL cleared. AI requests will stay disabled until one is set.');setTimeout(()=>location.reload(),500);return}
- try{
-  const u=new URL(raw.replace(/\/api\/v1\/?$/,''));
-  if(u.protocol!=='https:'&&u.hostname!=='localhost'&&u.hostname!=='127.0.0.1')throw new Error('Use an HTTPS Worker URL.');
-  if(u.username||u.password||u.search||u.hash|| (u.pathname!=='/'&&u.pathname!==''))throw new Error('Enter the Worker base URL only, without a path.');
-  localStorage.setItem('zx-worker-url',u.origin);
-  toast('Backend URL saved. Reloading…');
-  setTimeout(()=>location.reload(),450);
- }catch(e){toast(e.message||'That Worker URL is not valid.')}
-};
 addEventListener('message',e=>{if(!e.data||!e.data.zx||e.source!==$('#pvf').contentWindow)return;if(PVERR.length<20)PVERR.push(e.data.m);$('#pvet').textContent=PVERR.length+' error'+(PVERR.length>1?'s':'')+' in preview: '+PVERR[0];$('#pve').hidden=false});
 $('#pvfix').onclick=()=>{if(S.busy)return toast('Wait for the current reply, or stop it first');const m='The preview of '+PVN+' shows these errors:\n```\n'+PVERR.slice(0,5).join('\n')+'\n```\nFix them and give me the complete corrected file.';$('#pv').close();$('#ta').value=m;send()};
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();$('#ta').focus()}});
@@ -820,11 +894,12 @@ $('#list').onclick=async e=>{const row=e.target.closest('.ci');if(!row)return;co
 $('#msgs').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,me=b.closest('.m'),c=S.cur,i=me?+me.dataset.i:-1;
  if(a==='copy')copy(parts(c.messages[i]).a||c.messages[i].content);
  else if(a==='cc')copy(b.closest('.cb').querySelector('code').textContent);
+ else if(a==='ac')copy(b.closest('.art').querySelector('code').textContent);
  else if(a==='dl'){const art=b.closest('.art'),n=art.dataset.f;fileDl(n.split('/').pop(),art.querySelector('code').textContent,MIME[n.split('.').pop().toLowerCase()])}
  else if(a==='run')runJs(b.closest('.cb'));
  else if(a==='zip'){const mp=new Map([...b.closest('.mb').querySelectorAll('.art')].map(x=>[x.dataset.f,{name:x.dataset.f,text:x.querySelector('code').textContent}]));fileDl((S.cur.title.replace(/[^\w\- ]+/g,'').trim()||'zeplex')+'-files.zip',zipFiles([...mp.values()]),'application/zip')}
  else if(a==='alt'&&!S.busy){const m=c.messages[i],N=m.alts.length+1;if(+b.dataset.d>0){const nx=m.alts.shift();m.alts.push(snap(m));swap(m,nx);m.vi=((m.vi||0)+1)%N}else{const pv=m.alts.pop();m.alts.unshift(snap(m));swap(m,pv);m.vi=((m.vi||0)-1+N)%N}save(c);renderMsgs(false)}
- else if(a==='csv'){const t=b.parentElement.querySelector('table');fileDl('table.csv',[...t.rows].map(r=>[...r.cells].map(c=>'"'+c.textContent.replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')}
+ else if(a==='csv'){const t=b.closest('.tw').querySelector('table');fileDl('table.csv',[...t.rows].map(r=>[...r.cells].map(c=>'"'+c.textContent.replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')}
  else if(a==='fu'&&!S.busy){$('#ta').value=b.dataset.q;send()}
  else if(a==='refine'&&!S.busy)openRefine();
  else if(a==='up'||a==='down')rate(c,i,a,b).catch(()=>toast('Could not save your rating'));
@@ -838,9 +913,8 @@ $('#msgs').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a
 document.addEventListener('click',e=>{const b=e.target.closest('[data-close]'),d=b&&b.closest('dialog');if(d)d.close()});$('#sbx').onclick=closeDrawer;
 const dlgs=[...document.querySelectorAll('dialog')];dlgs.forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));
 $('#pv').addEventListener('close',()=>{$('#pvf').srcdoc=''});
-$('#stb').onclick=()=>{const n=Cat.models.length;$('#cinfo').textContent=n?`${n} AI engines ready · updated ${new Date(Cat.t).toLocaleString()}`:'Engines not loaded yet.';closeDrawer();$('#st').showModal()};
+$('#stb').onclick=()=>{closeDrawer();$('#st').showModal()};
 $('#stx').onclick=()=>$('#st').close();$('#pvx').onclick=()=>$('#pv').close();$('#pvr').onclick=()=>{PVERR.length=0;$('#pve').hidden=true;$('#pvf').srcdoc='';$('#pvf').srcdoc=PV};
-$('#rf').onclick=async()=>{try{await Cat.load(true);toast('AI engines refreshed');$('#stb').click()}catch{toast(Cat.models.length?'Refresh failed — using the cached catalogue':'Refresh failed — no catalogue available')}};
 $('#ex').onclick=()=>{const c=S.cur;if(!c)return toast('Open a chat to export it');
  fileDl((c.title.replace(/[^\w\- ]+/g,'').trim()||'chat')+'.md',`# ${c.title}\n\n`+c.messages.filter(m=>!m.err).map(m=>`**${m.role==='user'?'You':'Zeplex'}:**\n\n${m.content}`).join('\n\n---\n\n'),'text/markdown')};
 $('#cl').onclick=async()=>{if(!await ask('Delete every conversation stored in this browser? This cannot be undone.'))return;try{await DB.clear()}catch{toast('Could not clear storage');return}S.chats=[];$('#st').close();showHome();toast('Local history cleared')};
