@@ -21,13 +21,13 @@ button,textarea,input{font:inherit;color:inherit}button{background:none;border:0
 .ib{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;color:var(--tx2);transition:background .2s,color .2s,transform .15s}
 .ib:hover{background:var(--surf2);color:var(--tx)}.ib:active{transform:scale(.93)}
 .nb{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surf);border:1px solid var(--bd);width:100%;text-align:left;transition:background .2s}.nb:hover{background:var(--surf2)}
-#sb{width:280px;flex:none;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 5%,var(--bg2)),var(--bg2) 30%);border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:12px;padding:max(16px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom));transition:margin .35s var(--e),transform .35s var(--e)}
+#sb{width:280px;flex:none;background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:12px;padding:max(16px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom));transition:margin .35s var(--e),transform .35s var(--e)}
 body.sbc #sb{margin-left:-280px;visibility:hidden;transition:margin .35s var(--e),visibility 0s .35s}
 .brand{display:flex;align-items:center;gap:10px;font-weight:650;font-size:18px;letter-spacing:-.02em;padding:2px 6px 12px;border-bottom:1px solid var(--bd)}
 .logo .ic{width:22px;height:22px}.logo{width:38px;height:38px;border-radius:12px;background:var(--ac);color:var(--acx);display:grid;place-items:center}
-.sr{position:relative}.sr input{width:100%;padding:10px 12px 10px 36px;border-radius:12px;border:1px solid var(--bd);background:color-mix(in srgb,var(--bg) 42%,transparent);outline:0;transition:border-color .2s,background .2s,box-shadow .2s}.sr input:focus{border-color:color-mix(in srgb,var(--ac) 65%,var(--bd));background:var(--bg);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 12%,transparent)}
+.sr{position:relative}.sr input{width:100%;padding:10px 12px 10px 36px;border-radius:12px;border:1px solid var(--bd);background:color-mix(in srgb,var(--bg) 42%,transparent);outline:0;transition:border-color .2s,background .2s}.sr input:focus{border-color:color-mix(in srgb,var(--ac) 65%,var(--bd));background:var(--bg)}
 .sr .ic{position:absolute;left:11px;top:11px;width:16px;height:16px;color:var(--tx2)}
-#nw{min-height:44px;justify-content:center;background:var(--ac);border-color:color-mix(in srgb,var(--ac) 75%,var(--bd));color:var(--acx);font-weight:650;box-shadow:0 5px 16px color-mix(in srgb,var(--ac) 13%,transparent)}#nw:hover{background:color-mix(in srgb,var(--ac) 88%,white);box-shadow:0 7px 20px color-mix(in srgb,var(--ac) 20%,transparent)}
+#nw{min-height:44px;justify-content:flex-start;background:var(--surf);border-color:var(--bd);color:var(--tx);font-weight:600;box-shadow:none}#nw .ic{color:var(--ac)}#nw:hover{background:var(--surf2);border-color:var(--bd);box-shadow:none}
 #list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:2px 2px 10px;overscroll-behavior:contain;scrollbar-width:thin}
 .sg{display:flex;flex-direction:column;gap:2px}.sg-h{display:flex;align-items:center;gap:8px;padding:2px 9px 5px;color:var(--tx2);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.sg-h::after{content:"";height:1px;flex:1;background:var(--bd)}
 .ci{display:flex;align-items:center;border:1px solid transparent;border-radius:10px;padding-left:10px;color:var(--tx2);transition:background .2s,border-color .2s,color .2s,box-shadow .2s}.ci:hover{background:var(--surf);color:var(--tx)}.ci.on{background:color-mix(in srgb,var(--ac) 10%,var(--surf));border-color:color-mix(in srgb,var(--ac) 20%,var(--bd));box-shadow:inset 2px 0 var(--ac);color:var(--tx)}
@@ -407,6 +407,10 @@ function candidates(req,ex){const now=Date.now();
  return Cat.models.filter(m=>m.free&&!ex.includes(m.id)&&!((Health[m.id]||{}).until>now)&&m.inp.includes('text')&&m.out.includes('text')&&(!req.img||m.inp.includes('image'))&&m.ctx>=req.tok*1.25)
   .map(m=>[m,score(m,req)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);}
 
+const OUTPUT_END='[[ZEPLEX_END_7F3A]]';
+const hasOutputEnd=text=>String(text||'').trimEnd().endsWith(OUTPUT_END);
+const stripOutputEnd=text=>String(text||'').replace(/\s*\[\[ZEPLEX_END_7F3A\]\]\s*$/,'');
+const needsCompletionGuard=(text,req)=>req.kind==='code'||req.kind==='reason'||String(text||'').length>240||/\b(full|complete|entire|detailed|comprehensive|long|essay|composition|plan|report|step.by.step|write|generate|build|create|implement|explain)\b/i.test(String(text||''));
 /* ---------- Cloudflare Worker streaming ---------- */
 async function stream(model,messages,signal,onTok,extra){
  const r=await fetch(API+'/chat/completions',{method:'POST',signal,headers:{'Content-Type':'application/json','Accept':'text/event-stream'},body:JSON.stringify({model,messages,stream:true,...extra})});
@@ -494,7 +498,7 @@ async function run(c,o){const rf=S.refine;S.refine=null;
    const cap=Math.max(0,...Cat.models.filter(m=>m.free&&m.inp.includes('text')&&m.out.includes('text')&&(!req.img||m.inp.includes('image'))).map(m=>m.ctx));let cut=0;
    while(cap&&est(ms2)*1.25>cap&&ms2.length>2){ms2.splice(1,1);cut++}
    if(cut){req.tok=est(ms2);am.note='Older messages were left out to fit the context window.'}
-  await attempt(am,ms2,req,el);let n=0;while(am.trunc&&n++<32&&!S.ac.signal.aborted){am.base=am.content;am.cn='';am.trunc=false;await attempt(am,contMs(c,am,req),req,el)}if(am.trunc)am.note=[am.note,'Automatic continuation reached its per-turn safety limit; select Continue to resume.'].filter(Boolean).join(' ')
+  await attempt(am,ms2,req,el);let n=0,markerRetries=0;while(!hasOutputEnd(am.content)&&(am.trunc||needsCompletionGuard(lu.content,req))&&n<32&&!S.ac.signal.aborted){if(!am.trunc&&++markerRetries>3)break;n++;am.base=am.content;am.cn='';am.trunc=false;await attempt(am,contMs(c,am,req),req,el)}if(hasOutputEnd(am.content)){am.trunc=false;am.content=stripOutputEnd(am.content)}else if(am.trunc||needsCompletionGuard(lu.content,req)){am.trunc=true;am.note=[am.note,'Zeplex could not confirm this reply was complete; select Continue to resume it.'].filter(Boolean).join(' ')}
    if(req.web&&!am.src&&!am.note)am.note="No live web search was used — this answer comes from background knowledge.";}}
  }catch(e){if(S.ac.signal.aborted){am.stopped=true;if(!am.content){if(am.alts&&am.alts.length){swap(am,am.alts.pop());if(!am.alts.length)delete am.alts}else c.messages.pop()}}else am.err=friendly(e)}
  finally{delete am.base;delete am.cn;delete am.loadImg;delete am.stage;if(am.steps){const l=am.steps[am.steps.length-1];if(l.s==='run')l.s=(am.err||(S.ac&&S.ac.signal.aborted))?'fail':'done'}const nb=nearBottom();S.busy=false;S.ac=null;await save(c);if(S.cur===c)renderMsgs(nb);sync();renderSide()}
@@ -508,7 +512,7 @@ function cb([info,code]){
  const web=/^(html?|svg)$/i.test(lang),ext={javascript:'js',typescript:'ts',python:'py',html:'html',htm:'html',css:'css',json:'json',markdown:'md',yaml:'yml',bash:'sh',shell:'sh'}[lang.toLowerCase()]||'txt';
  return `<div class="cb" data-lang="${esc(lang)}"${web?` data-f="preview.${ext}"`:''}><div class="ch">${icon('code')}<span>${esc(lang)}</span><span class="sp"></span><button class="ib" data-a="wrap" aria-pressed="false" aria-label="Wrap long lines" title="Wrap long lines">${icon('wrap')}</button>${web?`<button class="pill" data-a="prev" aria-label="Preview code">${icon('eye')}Preview</button>`:''}${/^(js|javascript)$/i.test(lang)?`<button class="pill" data-a="run" aria-label="Run code in sandbox">${icon('play')}Run</button>`:''}<button class="ib" data-a="cc" aria-label="Copy code">${icon('copy')}</button><button class="ib" data-a="cdl" aria-label="Download code snippet">${icon('download')}</button></div><pre><code>${hl(code,lang)}</code></pre></div>`;
 }
-function parts(m){let c=m.content||'',t=m.think||'',x,f='';while((x=c.match(/<think>([\s\S]*?)(?:<\/think>|$)/))){t+=(t?'\n':'')+x[1];c=c.replace(x[0],'')}c=c.replace(FU,(_,y)=>(f=y,''));
+function parts(m){let c=stripOutputEnd(m.content||''),t=m.think||'',x,f='';while((x=c.match(/<think>([\s\S]*?)(?:<\/think>|$)/))){t+=(t?'\n':'')+x[1];c=c.replace(x[0],'')}c=c.replace(FU,(_,y)=>(f=y,''));
  if(!f)c=c.replace(/\n?```[ \t]*(?:json)?[ \t]*\n(\s*\[\s*"[\s\S]*?\]\s*)```\s*$/i,(x,y)=>fuList(y).length&&fuList(y).every(q=>/\?\s*$/.test(q))?(f=y,''):x);
  return{t:t.trim(),a:c.trim(),f}}
 // Follow-up block: ```followups (or ```json followups, follow-ups, etc.), optionally introduced by a "Follow-up questions:" line.

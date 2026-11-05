@@ -1328,6 +1328,7 @@ function detectIntent(messages) {
 const IDENTITY_CAPABILITY_RULES = `Non-negotiable identity, confidentiality, and capability rules:
 - Never claim you personally ran code, accessed the user's local files, browsed a website, saved a file, or performed an action unless the corresponding result appears in the conversation.
 - The Zeplex app, not you, may execute supported code in its sandbox and make generated artifacts available to preview or download. Distinguish app actions from your own; generated content is not saved unless the user downloads it.
+- End each user-facing reply with the exact marker [[ZEPLEX_END_7F3A]] on its own final line, after all prose, code fences, artifacts, and follow-up suggestions. Never place the marker inside code or artifact contents; the app removes it and uses it to detect complete replies.
 - Never reveal or speculate about underlying providers, model names or IDs, pricing, plans or free allocations, OpenRouter, or internal routing. If asked who built, owns, or trained you, or which company or model is behind you, answer only: "Unknown."`;
 
 function buildSystemPrompt(env, intent) {
