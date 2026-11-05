@@ -358,6 +358,7 @@ function openAIStream(source, model) {
   const created = Math.floor(Date.now() / 1000);
   let buffer = "";
   let finished = false;
+  let finishReason = "stop";
 
   const frame = (delta, finishReason = null) => ({
     id, object: "chat.completion.chunk", created, model,
@@ -368,7 +369,10 @@ function openAIStream(source, model) {
     if (!payload || payload === "[DONE]") return;
     let event;
     try { event = JSON.parse(payload); } catch { return; }
-    const delta = event.choices?.[0]?.delta || {};
+    const choice = event.choices?.[0];
+    const delta = choice?.delta || {};
+    const reason = choice?.finish_reason || event.finish_reason;
+    if (["stop", "length", "content_filter"].includes(reason)) finishReason = reason;
     const reasoning = event.reasoning || event.reasoning_content || delta.reasoning_content || delta.reasoning;
     const response = typeof event.response === "string"
       ? event.response
@@ -393,7 +397,7 @@ function openAIStream(source, model) {
               const item = line.trim();
               if (item.startsWith("data:")) enqueueEvent(controller, item.slice(5).trim());
             }
-            controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({}, "stop")) + "\n\n"));
+            controller.enqueue(encoder.encode("data: " + JSON.stringify(frame({}, finishReason)) + "\n\n"));
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             finished = true;
             controller.close();
